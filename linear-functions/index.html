@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linear Functions Explorer | y = kx + b</title>
+    <!-- Yandex.Metrika counter -->
+    <script type="text/javascript">
+        (function(m,e,t,r,i,k,a){
+            m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+            m[i].l=1*new Date();
+            for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+            k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+        })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=106371504', 'ym');
+
+        ym(106371504, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", accurateTrackBounce:true, trackLinks:true});
+    </script>
+    <noscript><div><img src="https://mc.yandex.ru/watch/106371504" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+    <!-- /Yandex.Metrika counter -->
+    <style>
+        /* ========== CSS Reset & Base Styles ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            color: #e8e8e8;
+            padding: 10px 15px;
+        }
+
+        /* ========== Layout ========== */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        header h1 {
+            font-size: 1.4rem;
+            color: #00d9ff;
+            text-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
+            margin-bottom: 2px;
+        }
+
+        header p {
+            color: #a0a0a0;
+            font-size: 0.8rem;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 390px;
+            gap: 12px;
+        }
+
+        @media (max-width: 1100px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ========== Graph Section ========== */
+        .graph-section {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            padding: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .equation-display {
+            text-align: center;
+            font-size: 1.3rem;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 8px;
+            padding: 10px;
+            background: rgba(0, 217, 255, 0.1);
+            border-radius: 8px;
+            border: 2px solid rgba(0, 217, 255, 0.3);
+        }
+
+        .equation-display .var-k {
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+
+        .equation-display .var-b {
+            color: #4ecdc4;
+            font-weight: bold;
+        }
+
+        .canvas-wrapper {
+            position: relative;
+            aspect-ratio: 1;
+            height: calc(100vh - 140px);
+            max-height: 700px;
+            margin: 0 auto;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            border-radius: 12px;
+            background: #0a0a14;
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.75rem;
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .legend-line {
+            width: 20px;
+            height: 3px;
+            border-radius: 2px;
+        }
+
+        .line-color { background: #00d9ff; }
+        .intercept-color { background: #4ecdc4; }
+        .origin-color { background: #ff6b6b; }
+        .x-intercept-color { background: #f39c12; }
+
+        /* ========== Control Panel ========== */
+        .control-panel {
+            display: grid;
+            grid-template-columns: 1fr;
+            grid-template-rows: auto auto 1fr;
+            gap: 8px;
+        }
+
+        .panel-section {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+            padding: 16px 18px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .panel-section h3 {
+            font-size: 0.85rem;
+            color: #00d9ff;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* ========== Sliders ========== */
+        .slider-group {
+            margin-bottom: 12px;
+        }
+
+        .slider-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .slider-label span:first-child {
+            font-weight: 500;
+            font-size: 1rem;
+        }
+
+        .slider-name.slope {
+            color: #ff6b6b;
+        }
+
+        .slider-name.intercept {
+            color: #4ecdc4;
+        }
+
+        .slider-value {
+            font-family: 'Courier New', monospace;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 4px 8px;
+            border-radius: 4px;
+            min-width: 50px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.1);
+            outline: none;
+            -webkit-appearance: none;
+            cursor: pointer;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.15s ease;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        #slider-k::-webkit-slider-thumb {
+            background: #ff6b6b;
+            box-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
+        }
+
+        #slider-b::-webkit-slider-thumb {
+            background: #4ecdc4;
+            box-shadow: 0 0 10px rgba(78, 205, 196, 0.5);
+        }
+
+        .slider-range {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.7rem;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        /* ========== Hints ========== */
+        .hints-list {
+            list-style: none;
+        }
+
+        .hints-list li {
+            padding: 12px 14px;
+            margin-bottom: 8px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 6px;
+            border-left: 3px solid;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .hints-list li:last-child {
+            margin-bottom: 0;
+        }
+
+        .hint-k {
+            border-left-color: #ff6b6b;
+        }
+
+        .hint-b {
+            border-left-color: #4ecdc4;
+        }
+
+        .hint-highlight {
+            font-weight: 600;
+        }
+
+        .hint-k .hint-highlight {
+            color: #ff6b6b;
+        }
+
+        .hint-b .hint-highlight {
+            color: #4ecdc4;
+        }
+
+        /* ========== Challenge ========== */
+        .challenge-box {
+            background: rgba(255, 215, 0, 0.08);
+            border: 1px solid rgba(255, 215, 0, 0.25);
+            border-radius: 8px;
+            padding: 12px;
+        }
+
+        .challenge-task {
+            font-size: 1rem;
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+
+        .challenge-task strong {
+            color: #ffd700;
+        }
+
+        .challenge-buttons {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .check-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            background: linear-gradient(135deg, #00d9ff, #00a8cc);
+            color: #0a0a14;
+            transition: all 0.2s ease;
+        }
+
+        .check-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 217, 255, 0.3);
+        }
+
+        .next-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.1);
+            color: #e8e8e8;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.2s ease;
+        }
+
+        .next-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .feedback {
+            padding: 10px;
+            border-radius: 6px;
+            text-align: center;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .feedback-correct {
+            background: rgba(46, 204, 113, 0.2);
+            color: #2ecc71;
+            border: 1px solid rgba(46, 204, 113, 0.4);
+        }
+
+        .feedback-wrong {
+            background: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+            border: 1px solid rgba(231, 76, 60, 0.4);
+        }
+
+        .feedback-hidden {
+            display: none;
+        }
+
+        .challenge-progress {
+            margin-top: 8px;
+            font-size: 0.85rem;
+            color: #a0a0a0;
+            text-align: center;
+        }
+
+        /* ========== Mobile Styles ========== */
+        @media (max-width: 768px) {
+            body {
+                padding: 8px 10px;
+            }
+
+            header {
+                margin-bottom: 8px;
+            }
+
+            header h1 {
+                font-size: 1.2rem;
+            }
+
+            header p {
+                font-size: 0.75rem;
+            }
+
+            .main-content {
+                gap: 10px;
+            }
+
+            .graph-section {
+                padding: 10px;
+                border-radius: 12px;
+            }
+
+            .equation-display {
+                font-size: 1.1rem;
+                padding: 8px;
+                margin-bottom: 6px;
+            }
+
+            .canvas-wrapper {
+                height: auto;
+                max-height: none;
+                aspect-ratio: 1;
+                width: 100%;
+            }
+
+            .legend {
+                gap: 10px;
+                margin-top: 6px;
+            }
+
+            .legend-item {
+                font-size: 0.65rem;
+                gap: 4px;
+            }
+
+            .legend-dot {
+                width: 8px;
+                height: 8px;
+            }
+
+            .legend-line {
+                width: 16px;
+                height: 2px;
+            }
+
+            .control-panel {
+                gap: 6px;
+            }
+
+            .panel-section {
+                padding: 12px 14px;
+                border-radius: 8px;
+            }
+
+            .panel-section h3 {
+                font-size: 0.8rem;
+                margin-bottom: 8px;
+            }
+
+            .slider-group {
+                margin-bottom: 14px;
+            }
+
+            .slider-label span:first-child {
+                font-size: 0.9rem;
+            }
+
+            .slider-value {
+                font-size: 0.85rem;
+                padding: 3px 6px;
+                min-width: 45px;
+            }
+
+            input[type="range"] {
+                height: 8px;
+            }
+
+            input[type="range"]::-webkit-slider-thumb {
+                width: 24px;
+                height: 24px;
+            }
+
+            .slider-range {
+                font-size: 0.65rem;
+            }
+
+            .hints-list li {
+                padding: 10px 12px;
+                margin-bottom: 6px;
+                font-size: 0.85rem;
+            }
+
+            .challenge-box {
+                padding: 10px;
+            }
+
+            .challenge-task {
+                font-size: 0.9rem;
+                margin-bottom: 10px;
+            }
+
+            .challenge-buttons {
+                gap: 6px;
+            }
+
+            .check-btn,
+            .next-btn {
+                padding: 12px 8px;
+                font-size: 0.85rem;
+            }
+
+            .feedback {
+                padding: 8px;
+                font-size: 0.85rem;
+            }
+
+            .challenge-progress {
+                font-size: 0.8rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 6px 8px;
+            }
+
+            header h1 {
+                font-size: 1rem;
+            }
+
+            header p {
+                font-size: 0.7rem;
+            }
+
+            .equation-display {
+                font-size: 1rem;
+                padding: 6px;
+            }
+
+            .legend {
+                flex-wrap: wrap;
+                gap: 6px 12px;
+            }
+
+            .legend-item {
+                font-size: 0.6rem;
+            }
+
+            .panel-section {
+                padding: 10px 12px;
+            }
+
+            .panel-section h3 {
+                font-size: 0.75rem;
+            }
+
+            .slider-label span:first-child {
+                font-size: 0.85rem;
+            }
+
+            input[type="range"]::-webkit-slider-thumb {
+                width: 28px;
+                height: 28px;
+            }
+
+            .hints-list li {
+                padding: 8px 10px;
+                font-size: 0.8rem;
+                line-height: 1.4;
+            }
+
+            .challenge-task {
+                font-size: 0.85rem;
+            }
+
+            .check-btn,
+            .next-btn {
+                padding: 14px 8px;
+            }
+        }
+
+        /* Touch device improvements */
+        @media (hover: none) and (pointer: coarse) {
+            input[type="range"]::-webkit-slider-thumb {
+                width: 28px;
+                height: 28px;
+            }
+
+            .check-btn,
+            .next-btn {
+                min-height: 48px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <h1>Linear Functions Explorer</h1>
+            <p>Discover how y = kx + b creates straight lines</p>
+        </header>
+
+        <div class="main-content">
+            <!-- Graph Section -->
+            <div class="graph-section">
+                <div class="equation-display">
+                    y = <span class="var-k" id="eq-k">1</span>x + <span class="var-b" id="eq-b">0</span>
+                </div>
+
+                <div class="canvas-wrapper">
+                    <canvas id="graph"></canvas>
+                </div>
+
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-line line-color"></div>
+                        <span>Line y = kx + b</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot intercept-color"></div>
+                        <span>Y-intercept (0, b)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot origin-color"></div>
+                        <span>Origin</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot x-intercept-color"></div>
+                        <span>X-intercept</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Control Panel -->
+            <div class="control-panel">
+                <!-- Row 1: Sliders -->
+                <div class="panel-section">
+                    <h3>Controls</h3>
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span class="slider-name slope">k (slope)</span>
+                            <span class="slider-value" id="value-k">1.0</span>
+                        </div>
+                        <input type="range" id="slider-k" min="-5" max="5" step="0.1" value="1">
+                        <div class="slider-range">
+                            <span>-5</span>
+                            <span>0</span>
+                            <span>5</span>
+                        </div>
+                    </div>
+                    <div class="slider-group">
+                        <div class="slider-label">
+                            <span class="slider-name intercept">b (y-intercept)</span>
+                            <span class="slider-value" id="value-b">0.0</span>
+                        </div>
+                        <input type="range" id="slider-b" min="-10" max="10" step="0.5" value="0">
+                        <div class="slider-range">
+                            <span>-10</span>
+                            <span>0</span>
+                            <span>10</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Row 2: Hints -->
+                <div class="panel-section">
+                    <h3>Understanding Parameters</h3>
+                    <ul class="hints-list">
+                        <li class="hint-k">
+                            <strong class="hint-highlight">k (slope)</strong> controls steepness<br>
+                            Positive ↗<br>
+                            Negative ↘<br>
+                            Zero = flat
+                        </li>
+                        <li class="hint-b">
+                            <strong class="hint-highlight">b (y-intercept)</strong> is where line crosses y-axis
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Row 3: Challenge -->
+                <div class="panel-section">
+                    <h3>Mini Challenge</h3>
+                    <div class="challenge-box">
+                        <div class="challenge-task" id="challenge-task">
+                            <strong>Task:</strong> Make a line that crosses the y-axis at 3
+                        </div>
+                        <div class="challenge-buttons">
+                            <button class="check-btn" onclick="checkChallenge()">Check</button>
+                            <button class="next-btn" onclick="nextChallenge()">Next</button>
+                        </div>
+                        <div class="feedback feedback-hidden" id="feedback"></div>
+                        <div class="challenge-progress" id="challenge-progress">Challenge 1 of 6</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========== CONFIGURATION ==========
+        const CONFIG = {
+            gridColor: 'rgba(255, 255, 255, 0.08)',
+            axisColor: 'rgba(255, 255, 255, 0.4)',
+            lineColor: '#00d9ff',
+            interceptColor: '#4ecdc4',
+            originColor: '#ff6b6b',
+            xInterceptColor: '#f39c12',
+            lineWidth: 3,
+            pointRadius: 7,
+            gridRange: 12,
+            padding: 35
+        };
+
+        // ========== CHALLENGES ==========
+        const CHALLENGES = [
+            {
+                text: "Make a line that crosses the y-axis at <strong>3</strong>",
+                check: (k, b) => Math.abs(b - 3) < 0.6,
+                initialK: 1,
+                initialB: 0
+            },
+            {
+                text: "Create a line with a <strong>negative slope</strong>",
+                check: (k, b) => k < 0,
+                initialK: 1,
+                initialB: 2
+            },
+            {
+                text: "Make a <strong>horizontal line</strong>",
+                check: (k, b) => Math.abs(k) < 0.15,
+                initialK: 2,
+                initialB: 1
+            },
+            {
+                text: "Create a <strong>steep line going upward</strong> (k > 2)",
+                check: (k, b) => k > 2,
+                initialK: -1,
+                initialB: 0
+            },
+            {
+                text: "Make the line pass through the <strong>origin (0, 0)</strong>",
+                check: (k, b) => Math.abs(b) < 0.6,
+                initialK: 1,
+                initialB: 3
+            },
+            {
+                text: "Create a line with slope <strong>2</strong> and y-intercept <strong>-4</strong>",
+                check: (k, b) => Math.abs(k - 2) < 0.3 && Math.abs(b - (-4)) < 0.6,
+                initialK: 1,
+                initialB: 0
+            }
+        ];
+
+        // ========== STATE ==========
+        let currentChallenge = 0;
+
+        // ========== DOM ELEMENTS ==========
+        const canvas = document.getElementById('graph');
+        const ctx = canvas.getContext('2d');
+        const sliderK = document.getElementById('slider-k');
+        const sliderB = document.getElementById('slider-b');
+        const valueK = document.getElementById('value-k');
+        const valueB = document.getElementById('value-b');
+        const eqK = document.getElementById('eq-k');
+        const eqB = document.getElementById('eq-b');
+        const challengeTask = document.getElementById('challenge-task');
+        const feedbackDiv = document.getElementById('feedback');
+        const challengeProgress = document.getElementById('challenge-progress');
+
+        // ========== CANVAS SETUP ==========
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            const size = Math.min(container.clientWidth, container.clientHeight);
+
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = size * dpr;
+            canvas.height = size * dpr;
+
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            canvas.logicalSize = size;
+
+            draw();
+        }
+
+        // ========== COORDINATE CONVERSION ==========
+        function toCanvasX(x) {
+            const size = canvas.logicalSize;
+            const scale = (size - CONFIG.padding * 2) / (CONFIG.gridRange * 2);
+            return CONFIG.padding + (x + CONFIG.gridRange) * scale;
+        }
+
+        function toCanvasY(y) {
+            const size = canvas.logicalSize;
+            const scale = (size - CONFIG.padding * 2) / (CONFIG.gridRange * 2);
+            return size - CONFIG.padding - (y + CONFIG.gridRange) * scale;
+        }
+
+        // ========== DRAWING FUNCTIONS ==========
+        function draw() {
+            const size = canvas.logicalSize;
+            const k = parseFloat(sliderK.value);
+            const b = parseFloat(sliderB.value);
+
+            ctx.clearRect(0, 0, size, size);
+
+            drawGrid();
+            drawAxes();
+            drawLine(k, b);
+            drawIntercept(b);
+            drawXIntercept(k, b);
+            drawOrigin();
+        }
+
+        function drawGrid() {
+            ctx.strokeStyle = CONFIG.gridColor;
+            ctx.lineWidth = 1;
+
+            for (let i = -CONFIG.gridRange; i <= CONFIG.gridRange; i++) {
+                ctx.beginPath();
+                ctx.moveTo(toCanvasX(i), toCanvasY(-CONFIG.gridRange));
+                ctx.lineTo(toCanvasX(i), toCanvasY(CONFIG.gridRange));
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.moveTo(toCanvasX(-CONFIG.gridRange), toCanvasY(i));
+                ctx.lineTo(toCanvasX(CONFIG.gridRange), toCanvasY(i));
+                ctx.stroke();
+            }
+        }
+
+        function drawAxes() {
+            ctx.strokeStyle = CONFIG.axisColor;
+            ctx.lineWidth = 2;
+
+            ctx.beginPath();
+            ctx.moveTo(toCanvasX(-CONFIG.gridRange), toCanvasY(0));
+            ctx.lineTo(toCanvasX(CONFIG.gridRange), toCanvasY(0));
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(toCanvasX(0), toCanvasY(-CONFIG.gridRange));
+            ctx.lineTo(toCanvasX(0), toCanvasY(CONFIG.gridRange));
+            ctx.stroke();
+
+            ctx.fillStyle = CONFIG.axisColor;
+            ctx.font = 'bold 14px Segoe UI';
+            ctx.textAlign = 'center';
+
+            ctx.fillText('x', toCanvasX(CONFIG.gridRange) - 5, toCanvasY(0) + 18);
+            ctx.fillText('y', toCanvasX(0) + 12, toCanvasY(CONFIG.gridRange) + 12);
+
+            ctx.font = '11px Segoe UI';
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+
+            for (let i = -CONFIG.gridRange; i <= CONFIG.gridRange; i += 2) {
+                if (i === 0) continue;
+
+                ctx.textAlign = 'center';
+                ctx.fillText(i.toString(), toCanvasX(i), toCanvasY(0) + 16);
+
+                ctx.textAlign = 'right';
+                ctx.fillText(i.toString(), toCanvasX(0) - 6, toCanvasY(i) + 4);
+            }
+        }
+
+        function drawLine(k, b) {
+            ctx.strokeStyle = CONFIG.lineColor;
+            ctx.lineWidth = CONFIG.lineWidth;
+            ctx.lineCap = 'round';
+
+            let x1 = -CONFIG.gridRange;
+            let y1 = k * x1 + b;
+            let x2 = CONFIG.gridRange;
+            let y2 = k * x2 + b;
+
+            if (y1 < -CONFIG.gridRange) {
+                y1 = -CONFIG.gridRange;
+                x1 = (y1 - b) / k;
+            } else if (y1 > CONFIG.gridRange) {
+                y1 = CONFIG.gridRange;
+                x1 = (y1 - b) / k;
+            }
+
+            if (y2 < -CONFIG.gridRange) {
+                y2 = -CONFIG.gridRange;
+                x2 = (y2 - b) / k;
+            } else if (y2 > CONFIG.gridRange) {
+                y2 = CONFIG.gridRange;
+                x2 = (y2 - b) / k;
+            }
+
+            ctx.shadowColor = CONFIG.lineColor;
+            ctx.shadowBlur = 10;
+
+            ctx.beginPath();
+            ctx.moveTo(toCanvasX(x1), toCanvasY(y1));
+            ctx.lineTo(toCanvasX(x2), toCanvasY(y2));
+            ctx.stroke();
+
+            ctx.shadowBlur = 0;
+        }
+
+        function drawIntercept(b) {
+            if (b < -CONFIG.gridRange || b > CONFIG.gridRange) return;
+
+            const x = toCanvasX(0);
+            const y = toCanvasY(b);
+
+            ctx.shadowColor = CONFIG.interceptColor;
+            ctx.shadowBlur = 12;
+
+            ctx.fillStyle = CONFIG.interceptColor;
+            ctx.beginPath();
+            ctx.arc(x, y, CONFIG.pointRadius, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.shadowBlur = 0;
+
+            ctx.fillStyle = CONFIG.interceptColor;
+            ctx.font = 'bold 14px Segoe UI';
+            ctx.textAlign = 'left';
+            ctx.fillText(`(0, ${b})`, x + 12, y - 10);
+        }
+
+        function drawXIntercept(k, b) {
+            if (Math.abs(k) < 0.001) return;
+
+            const xIntercept = -b / k;
+
+            if (xIntercept < -CONFIG.gridRange || xIntercept > CONFIG.gridRange) return;
+
+            const x = toCanvasX(xIntercept);
+            const y = toCanvasY(0);
+
+            ctx.shadowColor = CONFIG.xInterceptColor;
+            ctx.shadowBlur = 12;
+
+            ctx.fillStyle = CONFIG.xInterceptColor;
+            ctx.beginPath();
+            ctx.arc(x, y, CONFIG.pointRadius, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.shadowBlur = 0;
+
+            const xDisplay = Math.abs(xIntercept) < 0.01 ? 0 : parseFloat(xIntercept.toFixed(2));
+
+            ctx.fillStyle = CONFIG.xInterceptColor;
+            ctx.font = 'bold 14px Segoe UI';
+            ctx.textAlign = 'center';
+            ctx.fillText(`(${xDisplay}, 0)`, x, y + 24);
+        }
+
+        function drawOrigin() {
+            const x = toCanvasX(0);
+            const y = toCanvasY(0);
+
+            ctx.fillStyle = CONFIG.originColor;
+            ctx.beginPath();
+            ctx.arc(x, y, 4, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        // ========== UI UPDATES ==========
+        function updateDisplay() {
+            const k = parseFloat(sliderK.value);
+            const b = parseFloat(sliderB.value);
+
+            valueK.textContent = k.toFixed(1);
+            valueB.textContent = b.toFixed(1);
+
+            eqK.textContent = k.toFixed(1);
+
+            if (b >= 0) {
+                eqB.textContent = b.toFixed(1);
+                eqB.previousSibling.textContent = 'x + ';
+            } else {
+                eqB.textContent = Math.abs(b).toFixed(1);
+                eqB.previousSibling.textContent = 'x - ';
+            }
+
+            // Hide feedback when sliders change
+            feedbackDiv.className = 'feedback feedback-hidden';
+
+            draw();
+        }
+
+        // ========== CHALLENGE SYSTEM ==========
+        function updateChallengeDisplay() {
+            challengeTask.innerHTML = `<strong>Task:</strong> ${CHALLENGES[currentChallenge].text}`;
+            challengeProgress.textContent = `Challenge ${currentChallenge + 1} of ${CHALLENGES.length}`;
+            feedbackDiv.className = 'feedback feedback-hidden';
+        }
+
+        function checkChallenge() {
+            const k = parseFloat(sliderK.value);
+            const b = parseFloat(sliderB.value);
+            const isCorrect = CHALLENGES[currentChallenge].check(k, b);
+
+            if (isCorrect) {
+                feedbackDiv.textContent = 'Correct! Well done!';
+                feedbackDiv.className = 'feedback feedback-correct';
+            } else {
+                feedbackDiv.textContent = 'Not quite. Keep trying!';
+                feedbackDiv.className = 'feedback feedback-wrong';
+            }
+        }
+
+        function nextChallenge() {
+            currentChallenge = (currentChallenge + 1) % CHALLENGES.length;
+            const challenge = CHALLENGES[currentChallenge];
+            sliderK.value = challenge.initialK;
+            sliderB.value = challenge.initialB;
+            updateChallengeDisplay();
+            updateDisplay();
+        }
+
+        // ========== EVENT LISTENERS ==========
+        sliderK.addEventListener('input', updateDisplay);
+        sliderB.addEventListener('input', updateDisplay);
+        window.addEventListener('resize', resizeCanvas);
+
+        // ========== INITIALIZATION ==========
+        function init() {
+            resizeCanvas();
+            updateChallengeDisplay();
+            updateDisplay();
+        }
+
+        window.addEventListener('load', init);
+        if (document.readyState === 'complete') {
+            init();
+        }
+    </script>
+</body>
+</html>

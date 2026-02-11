@@ -1,0 +1,1269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Systems of Linear Equations Explorer</title>
+    <style>
+        /* ========== CSS Reset & Base Styles ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #ffffff;
+            min-height: 100vh;
+            color: #333333;
+            padding: 10px 15px;
+        }
+
+        /* ========== Layout ========== */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        header h1 {
+            font-size: 1.4rem;
+            color: #2563eb;
+            text-shadow: none;
+            margin-bottom: 2px;
+        }
+
+        header p {
+            color: #666666;
+            font-size: 0.8rem;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 12px;
+        }
+
+        @media (max-width: 1100px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ========== Canvas Container ========== */
+        .graph-section {
+            background: #f8f9fa;
+            border-radius: 16px;
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .canvas-wrapper {
+            position: relative;
+            aspect-ratio: 1;
+            height: calc(100vh - 140px);
+            max-height: 700px;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            border-radius: 12px;
+            background: #fafbfc;
+            cursor: crosshair;
+            border: 1px solid #e0e0e0;
+        }
+
+        /* ========== Equations Display ========== */
+        .equations-section {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .equations-display {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .equation {
+            font-size: 1.1rem;
+            font-family: 'Courier New', monospace;
+            padding: 10px 12px;
+            border-radius: 6px;
+            background: #f8f9fa;
+            border: 2px solid;
+            text-align: center;
+        }
+
+        .equation-1 {
+            color: #dc2626;
+            border-color: rgba(220, 38, 38, 0.3);
+        }
+
+        .equation-2 {
+            color: #0891b2;
+            border-color: rgba(8, 145, 178, 0.3);
+        }
+
+        /* ========== Solution Status ========== */
+        .solution-status {
+            text-align: center;
+            padding: 10px 8px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .status-one {
+            background: rgba(22, 163, 74, 0.1);
+            border: 1px solid rgba(22, 163, 74, 0.3);
+            color: #16a34a;
+        }
+
+        .status-none {
+            background: rgba(220, 38, 38, 0.1);
+            border: 1px solid rgba(220, 38, 38, 0.3);
+            color: #dc2626;
+        }
+
+        .status-infinite {
+            background: rgba(147, 51, 234, 0.1);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            color: #9333ea;
+        }
+
+        /* ========== Control Panel ========== */
+        .control-panel {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .panel-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 14px 16px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .panel-section h3 {
+            font-size: 0.8rem;
+            color: #2563eb;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* ========== Sliders ========== */
+        .slider-group {
+            margin-bottom: 12px;
+        }
+
+        .slider-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .slider-label span:first-child {
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .slider-value {
+            font-family: 'Courier New', monospace;
+            background: #e5e7eb;
+            padding: 4px 8px;
+            border-radius: 4px;
+            min-width: 50px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #333;
+        }
+
+        .line1-slider .slider-label {
+            color: #dc2626;
+        }
+
+        .line2-slider .slider-label {
+            color: #0891b2;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #d1d5db;
+            outline: none;
+            -webkit-appearance: none;
+            cursor: pointer;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.15s ease;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        .line1-slider input[type="range"]::-webkit-slider-thumb {
+            background: #dc2626;
+            box-shadow: 0 2px 6px rgba(220, 38, 38, 0.4);
+        }
+
+        .line2-slider input[type="range"]::-webkit-slider-thumb {
+            background: #0891b2;
+            box-shadow: 0 2px 6px rgba(8, 145, 178, 0.4);
+        }
+
+        /* Firefox slider styles */
+        input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+            transition: transform 0.15s ease;
+        }
+
+        input[type="range"]::-moz-range-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        .line1-slider input[type="range"]::-moz-range-thumb {
+            background: #dc2626;
+            box-shadow: 0 2px 6px rgba(220, 38, 38, 0.4);
+        }
+
+        .line2-slider input[type="range"]::-moz-range-thumb {
+            background: #0891b2;
+            box-shadow: 0 2px 6px rgba(8, 145, 178, 0.4);
+        }
+
+        input[type="range"]::-moz-range-track {
+            background: #d1d5db;
+            border-radius: 3px;
+            height: 6px;
+        }
+
+        /* ========== Preset Buttons ========== */
+        .presets-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 8px;
+        }
+
+        .preset-btn {
+            padding: 10px 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+        }
+
+        .preset-intersect {
+            background: rgba(22, 163, 74, 0.1);
+            color: #16a34a;
+            border: 1px solid rgba(22, 163, 74, 0.3);
+        }
+
+        .preset-intersect:hover {
+            background: rgba(22, 163, 74, 0.2);
+            transform: translateX(5px);
+        }
+
+        .preset-parallel {
+            background: rgba(220, 38, 38, 0.1);
+            color: #dc2626;
+            border: 1px solid rgba(220, 38, 38, 0.3);
+        }
+
+        .preset-parallel:hover {
+            background: rgba(220, 38, 38, 0.2);
+            transform: translateX(5px);
+        }
+
+        .preset-same {
+            background: rgba(147, 51, 234, 0.1);
+            color: #9333ea;
+            border: 1px solid rgba(147, 51, 234, 0.3);
+        }
+
+        .preset-same:hover {
+            background: rgba(147, 51, 234, 0.2);
+            transform: translateX(5px);
+        }
+
+        /* ========== Challenge Section ========== */
+        .challenge-box {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+        }
+
+        .challenge-task {
+            font-size: 0.95rem;
+            margin-bottom: 10px;
+            line-height: 1.4;
+            color: #333;
+        }
+
+        .challenge-task strong {
+            color: #d97706;
+        }
+
+        .challenge-buttons {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .check-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: #ffffff;
+            transition: all 0.2s ease;
+        }
+
+        .check-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .next-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            background: #e5e7eb;
+            color: #333333;
+            border: 1px solid #d1d5db;
+            transition: all 0.2s ease;
+        }
+
+        .next-btn:hover {
+            background: #d1d5db;
+        }
+
+        .feedback {
+            padding: 10px;
+            border-radius: 6px;
+            text-align: center;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .feedback-correct {
+            background: rgba(22, 163, 74, 0.1);
+            color: #16a34a;
+            border: 1px solid rgba(22, 163, 74, 0.3);
+        }
+
+        .feedback-wrong {
+            background: rgba(220, 38, 38, 0.1);
+            color: #dc2626;
+            border: 1px solid rgba(220, 38, 38, 0.3);
+        }
+
+        .feedback-hidden {
+            display: none;
+        }
+
+        .challenge-progress {
+            margin-top: 8px;
+            font-size: 0.85rem;
+            color: #666666;
+            text-align: center;
+        }
+
+        /* ========== Info Tooltip ========== */
+        .info-section {
+            background: rgba(37, 99, 235, 0.05);
+            border: 1px solid rgba(37, 99, 235, 0.2);
+            border-radius: 8px;
+            padding: 12px;
+        }
+
+        .info-section h4 {
+            color: #2563eb;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+        }
+
+        .info-section ul {
+            list-style: none;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: #444;
+        }
+
+        .info-section li {
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .info-section li::before {
+            content: '-';
+            position: absolute;
+            left: 0;
+            color: #2563eb;
+        }
+
+        /* ========== Mobile Styles ========== */
+        @media (max-width: 768px) {
+            body {
+                padding: 8px 10px;
+            }
+
+            header {
+                margin-bottom: 8px;
+            }
+
+            header h1 {
+                font-size: 1.2rem;
+            }
+
+            header p {
+                font-size: 0.75rem;
+            }
+
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .graph-section {
+                padding: 8px;
+                border-radius: 12px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .canvas-wrapper {
+                height: 45vh;
+                min-height: 280px;
+                max-height: 350px;
+                width: 100%;
+                max-width: 400px;
+            }
+
+            .control-panel {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .panel-section {
+                padding: 12px 14px;
+                border-radius: 8px;
+            }
+
+            .panel-section h3 {
+                font-size: 0.75rem;
+                margin-bottom: 8px;
+            }
+
+            /* Sliders */
+            .slider-group {
+                margin-bottom: 14px;
+            }
+
+            .slider-label span:first-child {
+                font-size: 0.9rem;
+            }
+
+            .slider-value {
+                font-size: 0.85rem;
+                padding: 3px 6px;
+                min-width: 45px;
+            }
+
+            input[type="range"] {
+                height: 8px;
+            }
+
+            input[type="range"]::-webkit-slider-thumb {
+                width: 24px;
+                height: 24px;
+            }
+
+            input[type="range"]::-moz-range-thumb {
+                width: 24px;
+                height: 24px;
+            }
+
+            input[type="range"]::-moz-range-track {
+                height: 8px;
+            }
+
+            /* Equations */
+            .equation {
+                font-size: 0.95rem;
+                padding: 8px 10px;
+            }
+
+            .solution-status {
+                padding: 8px;
+                font-size: 0.85rem;
+            }
+
+            /* Presets */
+            .preset-btn {
+                padding: 12px 14px;
+                font-size: 0.9rem;
+            }
+
+            /* Challenge */
+            .challenge-box {
+                padding: 10px;
+            }
+
+            .challenge-task {
+                font-size: 0.9rem;
+            }
+
+            .challenge-buttons {
+                flex-direction: row;
+            }
+
+            .check-btn,
+            .next-btn {
+                padding: 12px;
+                font-size: 0.9rem;
+            }
+
+            .feedback {
+                padding: 8px;
+                font-size: 0.85rem;
+            }
+
+            .challenge-progress {
+                font-size: 0.8rem;
+            }
+
+            /* Info */
+            .info-section {
+                padding: 10px;
+            }
+
+            .info-section h4 {
+                font-size: 0.8rem;
+            }
+
+            .info-section ul {
+                font-size: 0.8rem;
+                line-height: 1.5;
+            }
+        }
+
+        /* Extra small screens */
+        @media (max-width: 380px) {
+            body {
+                padding: 6px 8px;
+            }
+
+            header h1 {
+                font-size: 1.1rem;
+            }
+
+            .canvas-wrapper {
+                height: 40vh;
+                min-height: 250px;
+            }
+
+            .equation {
+                font-size: 0.85rem;
+                padding: 6px 8px;
+            }
+
+            .slider-label span:first-child {
+                font-size: 0.85rem;
+            }
+
+            input[type="range"]::-webkit-slider-thumb {
+                width: 22px;
+                height: 22px;
+            }
+
+            input[type="range"]::-moz-range-thumb {
+                width: 22px;
+                height: 22px;
+            }
+
+            .preset-btn {
+                padding: 10px 12px;
+                font-size: 0.85rem;
+            }
+
+            .check-btn,
+            .next-btn {
+                padding: 10px;
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+    <!-- Yandex.Metrika counter -->
+    <script type="text/javascript">
+        (function(m,e,t,r,i,k,a){
+            m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+            m[i].l=1*new Date();
+            for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+            k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+        })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=106371504', 'ym');
+
+        ym(106371504, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", accurateTrackBounce:true, trackLinks:true});
+    </script>
+    <noscript><div><img src="https://mc.yandex.ru/watch/106371504" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+    <!-- /Yandex.Metrika counter -->
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <h1>Systems of Linear Equations</h1>
+            <p>Explore how two lines can intersect, be parallel, or overlap</p>
+        </header>
+
+        <div class="main-content">
+            <!-- Graph Section -->
+            <div class="graph-section">
+                <div class="canvas-wrapper">
+                    <canvas id="graphCanvas"></canvas>
+                </div>
+            </div>
+
+            <!-- Control Panel -->
+            <div class="control-panel">
+                <!-- Row 1: Sliders -->
+                <!-- Sliders for Line 1 -->
+                <div class="panel-section">
+                    <h3>Line 1 (Red)</h3>
+                    <div class="slider-group line1-slider">
+                        <div class="slider-label">
+                            <span>Slope (k1)</span>
+                            <span class="slider-value" id="k1Value">1.0</span>
+                        </div>
+                        <input type="range" id="k1" min="-5" max="5" step="0.1" value="1">
+                    </div>
+                    <div class="slider-group line1-slider">
+                        <div class="slider-label">
+                            <span>Y-intercept (b1)</span>
+                            <span class="slider-value" id="b1Value">0.0</span>
+                        </div>
+                        <input type="range" id="b1" min="-10" max="10" step="0.5" value="0">
+                    </div>
+                </div>
+
+                <!-- Sliders for Line 2 -->
+                <div class="panel-section">
+                    <h3>Line 2 (Teal)</h3>
+                    <div class="slider-group line2-slider">
+                        <div class="slider-label">
+                            <span>Slope (k2)</span>
+                            <span class="slider-value" id="k2Value">-1.0</span>
+                        </div>
+                        <input type="range" id="k2" min="-5" max="5" step="0.1" value="-1">
+                    </div>
+                    <div class="slider-group line2-slider">
+                        <div class="slider-label">
+                            <span>Y-intercept (b2)</span>
+                            <span class="slider-value" id="b2Value">2.0</span>
+                        </div>
+                        <input type="range" id="b2" min="-10" max="10" step="0.5" value="2">
+                    </div>
+                </div>
+
+                <!-- Row 2: Equations & Presets -->
+                <!-- Equations Display -->
+                <div class="panel-section equations-section">
+                    <h3>System of Equations</h3>
+                    <div class="equations-display">
+                        <div class="equation equation-1" id="eq1">y = x</div>
+                        <div class="equation equation-2" id="eq2">y = -x + 2</div>
+                    </div>
+                    <div class="solution-status status-one" id="solutionStatus">
+                        <div id="statusText">One solution (lines intersect)</div>
+                    </div>
+                </div>
+
+                <!-- Preset Buttons -->
+                <div class="panel-section">
+                    <h3>Presets</h3>
+                    <div class="presets-grid">
+                        <button class="preset-btn preset-intersect" onclick="setPreset('intersect')">
+                            Intersecting Lines
+                        </button>
+                        <button class="preset-btn preset-parallel" onclick="setPreset('parallel')">
+                            Parallel Lines
+                        </button>
+                        <button class="preset-btn preset-same" onclick="setPreset('same')">
+                            Same Line
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Row 3: Challenge & Reference -->
+                <!-- Challenge Section -->
+                <div class="panel-section">
+                    <h3>Mini Challenge</h3>
+                    <div class="challenge-box">
+                        <div class="challenge-task" id="challengeTask">
+                            <strong>Task:</strong> Make the system have no solution (parallel lines)
+                        </div>
+                        <div class="challenge-buttons">
+                            <button class="check-btn" onclick="checkChallenge()">Check</button>
+                            <button class="next-btn" onclick="nextChallenge()">Next</button>
+                        </div>
+                        <div class="feedback feedback-hidden" id="feedback"></div>
+                        <div class="challenge-progress" id="challengeProgress">Challenge 1 of 5</div>
+                    </div>
+                </div>
+
+                <!-- Info Section -->
+                <div class="panel-section info-section">
+                    <h4>Quick Reference</h4>
+                    <ul>
+                        <li>Different slopes = intersect (1 solution)</li>
+                        <li>Same slope, different intercepts = parallel (no solution)</li>
+                        <li>Same slope AND intercept = same line (infinite)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========== Canvas Setup ==========
+        const canvas = document.getElementById('graphCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // High DPI canvas setup for crisp rendering
+        function setupCanvas() {
+            const rect = canvas.getBoundingClientRect();
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            ctx.scale(dpr, dpr);
+            canvas.style.width = rect.width + 'px';
+            canvas.style.height = rect.height + 'px';
+        }
+
+        // ========== Graph Parameters ==========
+        let canvasWidth, canvasHeight;
+        const gridRange = 20; // -20 to 20 on both axes (bigger grid)
+        let scale; // pixels per unit
+        let originX, originY; // pixel coordinates of origin
+
+        // ========== Slider Values ==========
+        let k1 = 1, b1 = 0, k2 = -1, b2 = 2;
+
+        // ========== DOM Elements ==========
+        const sliders = {
+            k1: document.getElementById('k1'),
+            b1: document.getElementById('b1'),
+            k2: document.getElementById('k2'),
+            b2: document.getElementById('b2')
+        };
+
+        const valueDisplays = {
+            k1: document.getElementById('k1Value'),
+            b1: document.getElementById('b1Value'),
+            k2: document.getElementById('k2Value'),
+            b2: document.getElementById('b2Value')
+        };
+
+        // ========== Challenge System ==========
+        // Reordered: easier challenges first, coordinate-based ones at end
+        const challenges = [
+            {
+                task: "Make the system have <strong>no solution</strong>",
+                check: () => Math.abs(k1 - k2) < 0.01 && Math.abs(b1 - b2) >= 0.1
+            },
+            {
+                task: "Make the system have <strong>infinitely many solutions</strong>",
+                check: () => Math.abs(k1 - k2) < 0.01 && Math.abs(b1 - b2) < 0.01
+            },
+            {
+                task: "Make parallel lines with slope <strong>3</strong>",
+                check: () => Math.abs(k1 - 3) < 0.15 && Math.abs(k2 - 3) < 0.15 && Math.abs(b1 - b2) >= 0.1
+            },
+            {
+                task: "Make the lines intersect at <strong>(2, -1)</strong>",
+                check: () => {
+                    const y1 = k1 * 2 + b1;
+                    const y2 = k2 * 2 + b2;
+                    return Math.abs(y1 - (-1)) < 0.15 && Math.abs(y2 - (-1)) < 0.15 && Math.abs(k1 - k2) > 0.05;
+                }
+            },
+            {
+                task: "Make the lines intersect at <strong>(0, 3)</strong>",
+                check: () => {
+                    return Math.abs(b1 - 3) < 0.15 && Math.abs(b2 - 3) < 0.15 && Math.abs(k1 - k2) > 0.05;
+                }
+            }
+        ];
+
+        let currentChallenge = 0;
+
+        // ========== Coordinate Conversion ==========
+        function toPixelX(x) {
+            return originX + x * scale;
+        }
+
+        function toPixelY(y) {
+            return originY - y * scale; // Y is inverted in canvas
+        }
+
+        function toGraphX(px) {
+            return (px - originX) / scale;
+        }
+
+        function toGraphY(py) {
+            return (originY - py) / scale;
+        }
+
+        // ========== Drawing Functions ==========
+
+        /**
+         * Clears canvas and redraws everything
+         */
+        function draw() {
+            // Get current canvas dimensions
+            const rect = canvas.getBoundingClientRect();
+            canvasWidth = rect.width;
+            canvasHeight = rect.height;
+            scale = Math.min(canvasWidth, canvasHeight) / (gridRange * 2 + 2);
+            originX = canvasWidth / 2;
+            originY = canvasHeight / 2;
+
+            // Clear canvas
+            ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+
+            // Draw components in order
+            drawGrid();
+            drawAxes();
+            drawLine(k1, b1, '#dc2626', 3);
+            drawLine(k2, b2, '#0891b2', 3);
+            drawIntersection();
+        }
+
+        /**
+         * Draws the background grid
+         */
+        function drawGrid() {
+            ctx.strokeStyle = 'rgba(0, 0, 0, 0.08)';
+            ctx.lineWidth = 1;
+
+            // Vertical lines
+            for (let x = -gridRange; x <= gridRange; x++) {
+                ctx.beginPath();
+                ctx.moveTo(toPixelX(x), 0);
+                ctx.lineTo(toPixelX(x), canvasHeight);
+                ctx.stroke();
+            }
+
+            // Horizontal lines
+            for (let y = -gridRange; y <= gridRange; y++) {
+                ctx.beginPath();
+                ctx.moveTo(0, toPixelY(y));
+                ctx.lineTo(canvasWidth, toPixelY(y));
+                ctx.stroke();
+            }
+        }
+
+        /**
+         * Draws X and Y axes with labels
+         */
+        function drawAxes() {
+            ctx.strokeStyle = 'rgba(0, 0, 0, 0.4)';
+            ctx.lineWidth = 2;
+
+            // X-axis
+            ctx.beginPath();
+            ctx.moveTo(0, originY);
+            ctx.lineTo(canvasWidth, originY);
+            ctx.stroke();
+
+            // Y-axis
+            ctx.beginPath();
+            ctx.moveTo(originX, 0);
+            ctx.lineTo(originX, canvasHeight);
+            ctx.stroke();
+
+            // Axis labels
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+            ctx.font = '11px Segoe UI';
+            ctx.textAlign = 'center';
+
+            // X-axis labels (every 5 units for bigger grid)
+            for (let x = -gridRange; x <= gridRange; x += 5) {
+                if (x !== 0) {
+                    ctx.fillText(x, toPixelX(x), originY + 16);
+                }
+            }
+
+            // Y-axis labels
+            ctx.textAlign = 'right';
+            for (let y = -gridRange; y <= gridRange; y += 5) {
+                if (y !== 0) {
+                    ctx.fillText(y, originX - 6, toPixelY(y) + 4);
+                }
+            }
+
+            // Origin label
+            ctx.textAlign = 'right';
+            ctx.fillText('0', originX - 6, originY + 16);
+
+            // Axis names
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+            ctx.font = 'bold 14px Segoe UI';
+            ctx.textAlign = 'left';
+            ctx.fillText('x', canvasWidth - 20, originY - 10);
+            ctx.fillText('y', originX + 10, 20);
+        }
+
+        /**
+         * Draws a line given slope k and y-intercept b
+         * @param {number} k - slope
+         * @param {number} b - y-intercept
+         * @param {string} color - line color
+         * @param {number} width - line width
+         */
+        function drawLine(k, b, color, width) {
+            ctx.strokeStyle = color;
+            ctx.lineWidth = width;
+            ctx.lineCap = 'round';
+
+            // Calculate line endpoints that extend beyond visible area
+            const xMin = -gridRange - 5;
+            const xMax = gridRange + 5;
+
+            const y1 = k * xMin + b;
+            const y2 = k * xMax + b;
+
+            ctx.beginPath();
+            ctx.moveTo(toPixelX(xMin), toPixelY(y1));
+            ctx.lineTo(toPixelX(xMax), toPixelY(y2));
+            ctx.stroke();
+        }
+
+        /**
+         * Calculates and draws the intersection point if it exists
+         */
+        function drawIntersection() {
+            const statusDiv = document.getElementById('solutionStatus');
+            const statusText = document.getElementById('statusText');
+
+            // Check if slopes are equal (parallel or same line)
+            if (Math.abs(k1 - k2) < 0.001) {
+                // Same slope - check if same line or parallel
+                if (Math.abs(b1 - b2) < 0.001) {
+                    // Same line - infinite solutions
+                    statusDiv.className = 'solution-status status-infinite';
+                    statusText.textContent = 'Infinitely many solutions (same line)';
+                } else {
+                    // Parallel lines - no solution
+                    statusDiv.className = 'solution-status status-none';
+                    statusText.textContent = 'No solution (parallel lines)';
+                }
+            } else {
+                // Lines intersect - calculate intersection point
+                // k1*x + b1 = k2*x + b2
+                // x(k1 - k2) = b2 - b1
+                // x = (b2 - b1) / (k1 - k2)
+                const x = (b2 - b1) / (k1 - k2);
+                const y = k1 * x + b1;
+
+                // Update status
+                statusDiv.className = 'solution-status status-one';
+                statusText.textContent = 'One solution (lines intersect)';
+
+                // Draw intersection point
+                const px = toPixelX(x);
+                const py = toPixelY(y);
+
+                // Only draw if within visible area
+                if (px >= 0 && px <= canvasWidth && py >= 0 && py <= canvasHeight) {
+                    // Glow effect
+                    const gradient = ctx.createRadialGradient(px, py, 0, px, py, 20);
+                    gradient.addColorStop(0, 'rgba(245, 158, 11, 0.5)');
+                    gradient.addColorStop(1, 'rgba(245, 158, 11, 0)');
+                    ctx.fillStyle = gradient;
+                    ctx.beginPath();
+                    ctx.arc(px, py, 20, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // Point
+                    ctx.fillStyle = '#f59e0b';
+                    ctx.beginPath();
+                    ctx.arc(px, py, 8, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // Border
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+
+                    // Draw coordinates label near the point
+                    const coordText = `(${x.toFixed(2)}, ${y.toFixed(2)})`;
+
+                    // Position label with smart offset to avoid edges
+                    let labelX = px + 15;
+                    let labelY = py - 15;
+
+                    // Measure text width for positioning
+                    ctx.font = 'bold 14px Courier New';
+                    const textWidth = ctx.measureText(coordText).width;
+
+                    // Adjust if too close to right edge
+                    if (labelX + textWidth + 10 > canvasWidth) {
+                        labelX = px - textWidth - 20;
+                    }
+                    // Adjust if too close to top edge
+                    if (labelY < 25) {
+                        labelY = py + 30;
+                    }
+                    // Adjust if too close to left edge
+                    if (labelX < 10) {
+                        labelX = 10;
+                    }
+
+                    // Draw label background
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+                    ctx.beginPath();
+                    ctx.roundRect(labelX - 6, labelY - 16, textWidth + 12, 22, 4);
+                    ctx.fill();
+
+                    // Draw label border
+                    ctx.strokeStyle = '#f59e0b';
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+
+                    // Draw coordinates text
+                    ctx.fillStyle = '#b45309';
+                    ctx.font = 'bold 14px Courier New';
+                    ctx.textAlign = 'left';
+                    ctx.fillText(coordText, labelX, labelY);
+                }
+            }
+        }
+
+        // ========== Equation Display ==========
+
+        /**
+         * Formats a number for display, avoiding -0
+         * @param {number} n - number to format
+         * @returns {string} formatted string
+         */
+        function formatNum(n) {
+            if (Math.abs(n) < 0.001) return '0';
+            return n.toFixed(1);
+        }
+
+        /**
+         * Updates the equation displays
+         */
+        function updateEquations() {
+            const eq1 = document.getElementById('eq1');
+            const eq2 = document.getElementById('eq2');
+
+            // Build equation string for a line
+            const buildEquation = (k, b) => {
+                const slopeIsZero = Math.abs(k) < 0.001;
+                const interceptIsZero = Math.abs(b) < 0.001;
+
+                // Case: both are zero -> y = 0
+                if (slopeIsZero && interceptIsZero) {
+                    return 'y = 0';
+                }
+
+                // Case: only slope is zero -> y = b
+                if (slopeIsZero) {
+                    return 'y = ' + formatNum(b);
+                }
+
+                // Case: slope is not zero
+                let result = 'y = ';
+
+                // Add slope term
+                if (Math.abs(k - 1) < 0.001) {
+                    result += 'x';
+                } else if (Math.abs(k + 1) < 0.001) {
+                    result += '-x';
+                } else {
+                    result += formatNum(k) + 'x';
+                }
+
+                // Add intercept if not zero
+                if (!interceptIsZero) {
+                    if (b > 0) {
+                        result += ' + ' + formatNum(b);
+                    } else {
+                        result += ' - ' + formatNum(Math.abs(b));
+                    }
+                }
+
+                return result;
+            };
+
+            eq1.textContent = buildEquation(k1, b1);
+            eq2.textContent = buildEquation(k2, b2);
+        }
+
+        // ========== Slider Event Handlers ==========
+
+        /**
+         * Updates all values and redraws
+         */
+        function updateFromSliders() {
+            k1 = parseFloat(sliders.k1.value);
+            b1 = parseFloat(sliders.b1.value);
+            k2 = parseFloat(sliders.k2.value);
+            b2 = parseFloat(sliders.b2.value);
+
+            // Update value displays
+            valueDisplays.k1.textContent = formatNum(k1);
+            valueDisplays.b1.textContent = formatNum(b1);
+            valueDisplays.k2.textContent = formatNum(k2);
+            valueDisplays.b2.textContent = formatNum(b2);
+
+            // Update equations and redraw
+            updateEquations();
+            draw();
+
+            // Hide feedback when sliders change
+            document.getElementById('feedback').className = 'feedback feedback-hidden';
+        }
+
+        // Attach event listeners to all sliders
+        Object.values(sliders).forEach(slider => {
+            slider.addEventListener('input', updateFromSliders);
+        });
+
+        // ========== Preset Functions ==========
+
+        /**
+         * Sets sliders to a preset configuration
+         * @param {string} preset - preset name
+         */
+        function setPreset(preset) {
+            switch (preset) {
+                case 'intersect':
+                    sliders.k1.value = 1;
+                    sliders.b1.value = -1;
+                    sliders.k2.value = -0.5;
+                    sliders.b2.value = 2;
+                    break;
+                case 'parallel':
+                    sliders.k1.value = 2;
+                    sliders.b1.value = 1;
+                    sliders.k2.value = 2;
+                    sliders.b2.value = -3;
+                    break;
+                case 'same':
+                    sliders.k1.value = -1;
+                    sliders.b1.value = 3;
+                    sliders.k2.value = -1;
+                    sliders.b2.value = 3;
+                    break;
+            }
+            updateFromSliders();
+        }
+
+        // ========== Challenge Functions ==========
+
+        /**
+         * Updates the challenge display
+         */
+        function updateChallengeDisplay() {
+            document.getElementById('challengeTask').innerHTML =
+                `<strong>Task:</strong> ${challenges[currentChallenge].task}`;
+            document.getElementById('challengeProgress').textContent =
+                `Challenge ${currentChallenge + 1} of ${challenges.length}`;
+            document.getElementById('feedback').className = 'feedback feedback-hidden';
+        }
+
+        /**
+         * Checks if the current challenge is solved
+         */
+        function checkChallenge() {
+            const feedbackDiv = document.getElementById('feedback');
+            const isCorrect = challenges[currentChallenge].check();
+
+            if (isCorrect) {
+                feedbackDiv.textContent = 'Correct! Well done!';
+                feedbackDiv.className = 'feedback feedback-correct';
+            } else {
+                feedbackDiv.textContent = 'Not quite. Keep trying!';
+                feedbackDiv.className = 'feedback feedback-wrong';
+            }
+        }
+
+        /**
+         * Moves to the next challenge
+         */
+        function nextChallenge() {
+            currentChallenge = (currentChallenge + 1) % challenges.length;
+            updateChallengeDisplay();
+        }
+
+        // ========== Initialization ==========
+
+        /**
+         * Initializes the application
+         */
+        function init() {
+            setupCanvas();
+            updateFromSliders();
+            updateChallengeDisplay();
+        }
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            setupCanvas();
+            draw();
+        });
+
+        // Initialize on load
+        window.addEventListener('load', init);
+
+        // Also run immediately in case DOM is already ready
+        if (document.readyState === 'complete') {
+            init();
+        }
+    </script>
+</body>
+</html>

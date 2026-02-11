@@ -1,0 +1,1366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parabola Explorer - Learn Quadratic Functions</title>
+    <!-- Yandex.Metrika counter -->
+    <script type="text/javascript">
+        (function(m,e,t,r,i,k,a){
+            m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+            m[i].l=1*new Date();
+            for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+            k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+        })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=106371504', 'ym');
+
+        ym(106371504, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+    </script>
+    <noscript><div><img src="https://mc.yandex.ru/watch/106371504" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+    <!-- /Yandex.Metrika counter -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(180deg, #e8f4f8 0%, #d4e9ed 50%, #c5dfe6 100%);
+            min-height: 100vh;
+            color: #2c3e50;
+            padding: 10px 15px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 8px;
+        }
+
+        header h1 {
+            font-size: 1.3rem;
+            color: #2980b9;
+            margin-bottom: 2px;
+            font-weight: 700;
+        }
+
+        .equation-display {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #e67e22;
+            font-family: 'Courier New', monospace;
+            background: #fff;
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 6px;
+            border: 2px solid #f39c12;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: auto auto;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        @media (max-width: 1100px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ========== Mobile Responsive ========== */
+        @media (max-width: 600px) {
+            body {
+                padding: 8px;
+            }
+
+            header h1 {
+                font-size: 1.1rem;
+            }
+
+            .equation-display {
+                font-size: 0.95rem;
+                padding: 3px 10px;
+            }
+
+            .main-content {
+                gap: 8px;
+                justify-items: center;
+            }
+
+            .graph-section {
+                width: 100%;
+                max-width: 400px;
+                margin: 0 auto;
+            }
+
+            .canvas-wrapper {
+                width: 100%;
+                aspect-ratio: 1;
+            }
+
+            .control-panel {
+                grid-template-columns: 1fr !important;
+                max-width: 100% !important;
+            }
+
+            .panel-section {
+                padding: 12px !important;
+            }
+
+            .panel-section h3 {
+                font-size: 0.85rem !important;
+            }
+
+            .slider-group {
+                margin-bottom: 14px !important;
+            }
+
+            .slider-label .param-name {
+                font-size: 0.95rem !important;
+            }
+
+            .value-input {
+                width: 70px !important;
+                padding: 6px 8px !important;
+                font-size: 0.9rem !important;
+            }
+
+            input[type="range"] {
+                height: 10px !important;
+            }
+
+            input[type="range"]::-webkit-slider-thumb {
+                width: 26px !important;
+                height: 26px !important;
+            }
+
+            .zoom-btn {
+                width: 44px !important;
+                height: 44px !important;
+                font-size: 1.5rem !important;
+            }
+
+            .zoom-btn.focus-btn {
+                font-size: 0.85rem !important;
+            }
+
+            .presets-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 8px !important;
+            }
+
+            .preset-btn {
+                padding: 12px 10px !important;
+                font-size: 0.85rem !important;
+            }
+
+            .challenge-btn {
+                padding: 12px !important;
+                font-size: 0.9rem !important;
+            }
+
+            .computed-item {
+                padding: 8px 10px !important;
+                font-size: 0.85rem !important;
+            }
+
+            .legend {
+                gap: 12px !important;
+                font-size: 0.8rem !important;
+            }
+
+            .legend-dot {
+                width: 10px !important;
+                height: 10px !important;
+            }
+
+            .hints-list {
+                font-size: 0.9rem !important;
+            }
+
+            .hint {
+                padding: 4px 0 !important;
+            }
+
+            .challenge-text {
+                font-size: 0.9rem !important;
+            }
+
+            .canvas-wrapper {
+                height: 55vw !important;
+                min-height: 280px !important;
+                max-height: 400px !important;
+            }
+        }
+
+        /* ========== Graph Section ========== */
+        .graph-section {
+            background: #fff;
+            border-radius: 12px;
+            padding: 10px;
+            border: 2px solid #bdc3c7;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .canvas-wrapper {
+            position: relative;
+            aspect-ratio: 1;
+            height: calc(100vh - 110px);
+            max-height: 800px;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            border-radius: 10px;
+            background: #f8f9fa;
+            cursor: crosshair;
+            border: 2px solid #95a5a6;
+        }
+
+        .zoom-controls {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .zoom-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 8px;
+            background: #fff;
+            color: #2980b9;
+            font-size: 1.4rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 2px solid #3498db;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+        }
+
+        .zoom-btn:hover {
+            background: #3498db;
+            color: #fff;
+            transform: scale(1.05);
+        }
+
+        .zoom-btn:active {
+            transform: scale(0.95);
+        }
+
+        .zoom-btn.focus-btn {
+            margin-top: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            background: #fff;
+            border-color: #9b59b6;
+            color: #9b59b6;
+        }
+
+        .zoom-btn.focus-btn:hover {
+            background: #9b59b6;
+            color: #fff;
+        }
+
+        .zoom-btn.focus-btn.active {
+            background: #9b59b6;
+            border-color: #8e44ad;
+            color: #fff;
+            box-shadow: 0 0 10px rgba(155, 89, 182, 0.5);
+        }
+
+        .zoom-info {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background: #fff;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            color: #7f8c8d;
+            border: 1px solid #bdc3c7;
+            font-weight: 500;
+        }
+
+        /* ========== Controls Section ========== */
+        .control-panel {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            max-width: 440px;
+        }
+
+        .panel-section {
+            background: #fff;
+            border-radius: 10px;
+            padding: 12px 14px;
+            border: 2px solid #bdc3c7;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .panel-section h3 {
+            font-size: 0.8rem;
+            color: #2980b9;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 700;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 5px;
+        }
+
+        /* ========== Sliders with Input ========== */
+        .slider-group {
+            margin-bottom: 12px;
+        }
+
+        .slider-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .slider-group.focused {
+            background: #ebf5fb;
+            margin: -6px -10px 8px;
+            padding: 6px 10px;
+            border-radius: 8px;
+            border: 2px solid #3498db;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .slider-label .param-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .slider-label .param-name.param-a { color: #e74c3c; }
+        .slider-label .param-name.param-h { color: #27ae60; }
+        .slider-label .param-name.param-k { color: #f39c12; }
+
+        .value-input {
+            width: 62px;
+            background: #fff;
+            border: 2px solid #bdc3c7;
+            border-radius: 6px;
+            padding: 4px 6px;
+            color: #2c3e50;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            text-align: center;
+            -moz-appearance: textfield;
+            font-weight: 600;
+        }
+
+        .value-input::-webkit-outer-spin-button,
+        .value-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .value-input:focus {
+            outline: none;
+            border-color: #3498db;
+            background: #ebf5fb;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: #ecf0f1;
+            outline: none;
+            -webkit-appearance: none;
+            cursor: pointer;
+            border: 1px solid #bdc3c7;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.15s ease;
+            border: 3px solid #fff;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.15);
+        }
+
+        .slider-a::-webkit-slider-thumb { background: #e74c3c; }
+        .slider-h::-webkit-slider-thumb { background: #27ae60; }
+        .slider-k::-webkit-slider-thumb { background: #f39c12; }
+
+        /* ========== Computed Values ========== */
+        .computed-values {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            font-size: 0.8rem;
+        }
+
+        .computed-item {
+            background: #f8f9fa;
+            padding: 6px 10px;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            border: 1px solid #ecf0f1;
+        }
+
+        .computed-label {
+            color: #7f8c8d;
+            font-weight: 500;
+        }
+
+        .computed-value {
+            font-family: 'Courier New', monospace;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        /* ========== Legend ========== */
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            font-size: 0.75rem;
+            padding-top: 8px;
+            border-top: 2px solid #ecf0f1;
+            margin-top: 8px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: 500;
+            color: #5d6d7e;
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+
+        .legend-dot.vertex { background: #e74c3c; }
+        .legend-dot.y-intercept { background: #27ae60; }
+        .legend-dot.x-intercept { background: #f39c12; }
+        .legend-dot.focus { background: #9b59b6; }
+
+        /* ========== Hints ========== */
+        .hints-list {
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+
+        .hint {
+            padding: 3px 0;
+            color: #5d6d7e;
+        }
+
+        .hint-var {
+            font-weight: 700;
+            color: #e74c3c;
+            background: #fdedec;
+            padding: 1px 6px;
+            border-radius: 4px;
+        }
+
+        /* ========== Presets ========== */
+        .presets-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+        }
+
+        .preset-btn {
+            padding: 9px 10px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+            background: #ebf5fb;
+            color: #2980b9;
+            border: 2px solid #3498db;
+        }
+
+        .preset-btn:hover {
+            background: #3498db;
+            color: #fff;
+            transform: translateY(-1px);
+        }
+
+        .preset-btn:active {
+            transform: translateY(0);
+        }
+
+        /* ========== Challenge ========== */
+        .challenge-box {
+            background: #fef9e7;
+            border: 2px solid #f4d03f;
+            border-radius: 10px;
+            padding: 12px;
+        }
+
+        .challenge-text {
+            font-size: 0.85rem;
+            margin-bottom: 10px;
+            line-height: 1.5;
+            color: #5d6d7e;
+        }
+
+        .challenge-text strong {
+            color: #d68910;
+            font-weight: 700;
+        }
+
+        .challenge-controls {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .challenge-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .check-btn {
+            background: #27ae60;
+            color: #fff;
+            border: 2px solid #1e8449;
+        }
+
+        .check-btn:hover {
+            background: #1e8449;
+        }
+
+        .next-btn {
+            background: #fff;
+            color: #7f8c8d;
+            border: 2px solid #bdc3c7;
+        }
+
+        .next-btn:hover {
+            background: #ecf0f1;
+            color: #5d6d7e;
+        }
+
+        .challenge-btn:active {
+            transform: scale(0.98);
+        }
+
+        .feedback {
+            padding: 8px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.8rem;
+            display: none;
+        }
+
+        .feedback.correct {
+            display: block;
+            background: #d4efdf;
+            color: #1e8449;
+            border: 2px solid #27ae60;
+        }
+
+        .feedback.incorrect {
+            display: block;
+            background: #fadbd8;
+            color: #c0392b;
+            border: 2px solid #e74c3c;
+        }
+
+        .challenge-progress {
+            margin-top: 8px;
+            font-size: 0.75rem;
+            color: #7f8c8d;
+            text-align: center;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Parabola Explorer</h1>
+            <div class="equation-display" id="equationDisplay">y = x²</div>
+        </header>
+
+        <div class="main-content">
+            <!-- Graph Section -->
+            <div class="graph-section">
+                <div class="canvas-wrapper">
+                    <canvas id="graphCanvas"></canvas>
+                    <div class="zoom-controls">
+                        <button class="zoom-btn" id="zoomIn" title="Zoom In">+</button>
+                        <button class="zoom-btn" id="zoomOut" title="Zoom Out">−</button>
+                        <button class="zoom-btn focus-btn" id="focusVertex" title="Show Focus Point">F</button>
+                    </div>
+                    <div class="zoom-info" id="zoomInfo">Zoom: 100%</div>
+                </div>
+            </div>
+
+            <!-- Control Panel -->
+            <div class="control-panel">
+                <!-- Parameters -->
+                <div class="panel-section">
+                    <h3>Parameters (Vertex Form)</h3>
+
+                    <div class="slider-group" id="groupA">
+                        <div class="slider-label">
+                            <span class="param-name param-a">a (width/direction)</span>
+                            <input type="number" class="value-input" id="inputA" value="1" step="0.01">
+                        </div>
+                        <input type="range" id="sliderA" class="slider-a" min="-10" max="10" step="0.01" value="1">
+                    </div>
+
+                    <div class="slider-group" id="groupH">
+                        <div class="slider-label">
+                            <span class="param-name param-h">h (horizontal shift)</span>
+                            <input type="number" class="value-input" id="inputH" value="0" step="0.01">
+                        </div>
+                        <input type="range" id="sliderH" class="slider-h" min="-50" max="50" step="0.01" value="0">
+                    </div>
+
+                    <div class="slider-group" id="groupK">
+                        <div class="slider-label">
+                            <span class="param-name param-k">k (vertical shift)</span>
+                            <input type="number" class="value-input" id="inputK" value="0" step="0.01">
+                        </div>
+                        <input type="range" id="sliderK" class="slider-k" min="-50" max="50" step="0.01" value="0">
+                    </div>
+                </div>
+
+                <!-- Key Values -->
+                <div class="panel-section">
+                    <h3>Key Values</h3>
+                    <div class="computed-values">
+                        <div class="computed-item">
+                            <span class="computed-label">Vertex</span>
+                            <span class="computed-value" id="vertexValue">(0, 0)</span>
+                        </div>
+                        <div class="computed-item">
+                            <span class="computed-label">Y-Intercept</span>
+                            <span class="computed-value" id="yInterceptValue">(0, 0)</span>
+                        </div>
+                        <div class="computed-item">
+                            <span class="computed-label">X-Intercepts</span>
+                            <span class="computed-value" id="xInterceptsValue">x = 0</span>
+                        </div>
+                        <div class="computed-item">
+                            <span class="computed-label">Standard Form</span>
+                            <span class="computed-value" id="standardFormValue">y = x²</span>
+                        </div>
+                    </div>
+                    <div class="legend">
+                        <div class="legend-item"><span class="legend-dot vertex"></span> Vertex</div>
+                        <div class="legend-item"><span class="legend-dot y-intercept"></span> Y-Int</div>
+                        <div class="legend-item"><span class="legend-dot x-intercept"></span> X-Int</div>
+                        <div class="legend-item"><span class="legend-dot focus"></span> Focus</div>
+                    </div>
+                </div>
+
+                <!-- How It Works -->
+                <div class="panel-section">
+                    <h3>How It Works</h3>
+                    <div class="hints-list">
+                        <div class="hint"><span class="hint-var">a</span> — Opens up (+) or down (−); larger |a| = narrower</div>
+                        <div class="hint"><span class="hint-var">h</span> — Vertex x-coordinate (+h moves right)</div>
+                        <div class="hint"><span class="hint-var">k</span> — Vertex y-coordinate (+k moves up)</div>
+                    </div>
+                </div>
+
+                <!-- Presets -->
+                <div class="panel-section">
+                    <h3>Presets</h3>
+                    <div class="presets-grid">
+                        <button class="preset-btn" onclick="setPreset(1, 0, -2)">Two X-Intercepts</button>
+                        <button class="preset-btn" onclick="setPreset(1, 2, 0)">Tangent to X-axis</button>
+                        <button class="preset-btn" onclick="setPreset(1, 0, 2)">No Real Roots</button>
+                        <button class="preset-btn" onclick="setPreset(0.3, 0, 0)">Wide Parabola</button>
+                    </div>
+                </div>
+
+                <!-- Challenge -->
+                <div class="panel-section" style="grid-column: 1 / -1;">
+                    <h3>Mini Challenge</h3>
+                    <div class="challenge-box">
+                        <div class="challenge-text" id="challengeText">
+                            <strong>Task:</strong> Make the parabola touch the x-axis at exactly one point.
+                        </div>
+                        <div class="challenge-controls">
+                            <button class="challenge-btn check-btn" onclick="checkChallenge()">Check</button>
+                            <button class="challenge-btn next-btn" onclick="nextChallenge()">Next</button>
+                        </div>
+                        <div class="feedback" id="feedback"></div>
+                        <div class="challenge-progress" id="challengeProgress">Challenge 1 of 7</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // PARABOLA EXPLORER
+        // Vertex Form: y = a(x - h)² + k
+        // ==========================================
+
+        const canvas = document.getElementById('graphCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // UI Elements
+        const sliderA = document.getElementById('sliderA');
+        const sliderH = document.getElementById('sliderH');
+        const sliderK = document.getElementById('sliderK');
+        const inputA = document.getElementById('inputA');
+        const inputH = document.getElementById('inputH');
+        const inputK = document.getElementById('inputK');
+        const groupA = document.getElementById('groupA');
+        const groupH = document.getElementById('groupH');
+        const groupK = document.getElementById('groupK');
+        const equationDisplay = document.getElementById('equationDisplay');
+        const vertexValue = document.getElementById('vertexValue');
+        const yInterceptValue = document.getElementById('yInterceptValue');
+        const xInterceptsValue = document.getElementById('xInterceptsValue');
+        const standardFormValue = document.getElementById('standardFormValue');
+        const feedbackEl = document.getElementById('feedback');
+        const challengeTextEl = document.getElementById('challengeText');
+        const challengeProgressEl = document.getElementById('challengeProgress');
+        const zoomInBtn = document.getElementById('zoomIn');
+        const zoomOutBtn = document.getElementById('zoomOut');
+        const zoomInfo = document.getElementById('zoomInfo');
+        const focusVertexBtn = document.getElementById('focusVertex');
+
+        // Parameters
+        let a = 1, h = 0, k = 0;
+        let viewRange = 10;
+        const minZoom = 3;
+        const maxZoom = 50;
+        const baseZoom = 10;
+
+        // Show focus point
+        let showFocus = false;
+
+        // Canvas dimensions
+        let canvasWidth, canvasHeight, scale, originX, originY;
+
+        // Challenges
+        const challenges = [
+            {
+                text: "<strong>Task:</strong> Make the parabola touch the x-axis at exactly one point.",
+                check: () => Math.abs(k) < 0.2 && a !== 0
+            },
+            {
+                text: "<strong>Task:</strong> Make the parabola open downward and cross the x-axis twice.",
+                check: () => a < 0 && k > 0.3
+            },
+            {
+                text: "<strong>Task:</strong> Position the vertex at the origin (0, 0).",
+                check: () => Math.abs(h) < 0.2 && Math.abs(k) < 0.2 && a !== 0
+            },
+            {
+                text: "<strong>Task:</strong> Make a very narrow parabola (|a| >= 3) opening upward.",
+                check: () => a >= 3
+            },
+            {
+                text: "<strong>Task:</strong> Position the vertex in the third quadrant (x < 0, y < 0).",
+                check: () => h < -0.3 && k < -0.3 && a !== 0
+            },
+            {
+                text: "<strong>Task:</strong> Make the parabola pass through the point (0, 4).",
+                check: () => {
+                    const yAt0 = a * h * h + k;
+                    return Math.abs(yAt0 - 4) < 0.3 && a !== 0;
+                }
+            },
+            {
+                text: "<strong>Task:</strong> Make the vertex at (2, -3).",
+                check: () => Math.abs(h - 2) < 0.2 && Math.abs(k - (-3)) < 0.2 && a !== 0
+            }
+        ];
+        let currentChallenge = 0;
+
+        // ==========================================
+        // INITIALIZATION
+        // ==========================================
+
+        function init() {
+            setupCanvas();
+            window.addEventListener('resize', () => {
+                setupCanvas();
+                draw();
+            });
+
+            // Slider events
+            sliderA.addEventListener('input', () => updateFromSlider('a'));
+            sliderH.addEventListener('input', () => updateFromSlider('h'));
+            sliderK.addEventListener('input', () => updateFromSlider('k'));
+
+            // Input events
+            inputA.addEventListener('input', () => updateFromInput('a'));
+            inputH.addEventListener('input', () => updateFromInput('h'));
+            inputK.addEventListener('input', () => updateFromInput('k'));
+
+            // Focus events
+            [sliderA, inputA].forEach(el => {
+                el.addEventListener('focus', () => setFocus('a'));
+                el.addEventListener('blur', clearFocus);
+            });
+            [sliderH, inputH].forEach(el => {
+                el.addEventListener('focus', () => setFocus('h'));
+                el.addEventListener('blur', clearFocus);
+            });
+            [sliderK, inputK].forEach(el => {
+                el.addEventListener('focus', () => setFocus('k'));
+                el.addEventListener('blur', clearFocus);
+            });
+
+            // Zoom controls
+            zoomInBtn.addEventListener('click', () => zoom(-2));
+            zoomOutBtn.addEventListener('click', () => zoom(2));
+            focusVertexBtn.addEventListener('click', toggleFocus);
+
+            canvas.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                const delta = e.deltaY > 0 ? 1 : -1;
+                zoom(delta);
+            }, { passive: false });
+
+            updateDisplay();
+            updateChallengeText();
+            draw();
+        }
+
+        function setupCanvas() {
+            const wrapper = canvas.parentElement;
+            const rect = wrapper.getBoundingClientRect();
+            const dpr = window.devicePixelRatio || 1;
+
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            ctx.scale(dpr, dpr);
+
+            canvasWidth = rect.width;
+            canvasHeight = rect.height;
+        }
+
+        // ==========================================
+        // FOCUS MANAGEMENT
+        // ==========================================
+
+        function setFocus(param) {
+            clearFocus();
+            if (param === 'a') groupA.classList.add('focused');
+            if (param === 'h') groupH.classList.add('focused');
+            if (param === 'k') groupK.classList.add('focused');
+        }
+
+        function clearFocus() {
+            groupA.classList.remove('focused');
+            groupH.classList.remove('focused');
+            groupK.classList.remove('focused');
+        }
+
+        // ==========================================
+        // ZOOM & FOCUS
+        // ==========================================
+
+        function zoom(delta) {
+            viewRange = Math.max(minZoom, Math.min(maxZoom, viewRange + delta));
+            const zoomPercent = Math.round((baseZoom / viewRange) * 100);
+            zoomInfo.textContent = `Zoom: ${zoomPercent}%`;
+            draw();
+        }
+
+        function toggleFocus() {
+            showFocus = !showFocus;
+            focusVertexBtn.classList.toggle('active', showFocus);
+            draw();
+        }
+
+        // ==========================================
+        // PARAMETER UPDATES
+        // ==========================================
+
+        function updateFromSlider(param) {
+            if (param === 'a') {
+                let val = parseFloat(sliderA.value);
+                if (Math.abs(val) < 0.01) val = val >= 0 ? 0.01 : -0.01;
+                a = val;
+                inputA.value = a.toFixed(2);
+            } else if (param === 'h') {
+                h = parseFloat(sliderH.value);
+                inputH.value = h.toFixed(2);
+            } else if (param === 'k') {
+                k = parseFloat(sliderK.value);
+                inputK.value = k.toFixed(2);
+            }
+            updateDisplay();
+            draw();
+            hideFeedback();
+        }
+
+        function updateFromInput(param) {
+            if (param === 'a') {
+                let val = parseFloat(inputA.value) || 0.01;
+                if (Math.abs(val) < 0.01) val = val >= 0 ? 0.01 : -0.01;
+                a = val;
+                sliderA.value = Math.max(-10, Math.min(10, a));
+            } else if (param === 'h') {
+                h = parseFloat(inputH.value) || 0;
+                sliderH.value = Math.max(-50, Math.min(50, h));
+            } else if (param === 'k') {
+                k = parseFloat(inputK.value) || 0;
+                sliderK.value = Math.max(-50, Math.min(50, k));
+            }
+            updateDisplay();
+            draw();
+            hideFeedback();
+        }
+
+        function setPreset(newA, newH, newK) {
+            a = newA;
+            h = newH;
+            k = newK;
+            sliderA.value = a;
+            sliderH.value = h;
+            sliderK.value = k;
+            inputA.value = a.toFixed(2);
+            inputH.value = h.toFixed(2);
+            inputK.value = k.toFixed(2);
+            updateDisplay();
+            draw();
+            hideFeedback();
+        }
+
+        // ==========================================
+        // DISPLAY UPDATES
+        // ==========================================
+
+        function updateDisplay() {
+            equationDisplay.textContent = formatVertexEquation(a, h, k);
+            vertexValue.textContent = `(${h.toFixed(2)}, ${k.toFixed(2)})`;
+
+            const yInt = a * h * h + k;
+            yInterceptValue.textContent = `(0, ${yInt.toFixed(2)})`;
+
+            const stdA = a;
+            const stdB = -2 * a * h;
+            const stdC = a * h * h + k;
+            standardFormValue.textContent = formatStandardEquation(stdA, stdB, stdC);
+
+            updateXIntercepts();
+        }
+
+        function formatVertexEquation(a, h, k) {
+            let eq = 'y = ';
+            if (a === 1) eq += '';
+            else if (a === -1) eq += '-';
+            else eq += `${a.toFixed(2)}`;
+
+            if (h === 0) {
+                eq += 'x²';
+            } else if (h > 0) {
+                eq += `(x − ${h.toFixed(2)})²`;
+            } else {
+                eq += `(x + ${Math.abs(h).toFixed(2)})²`;
+            }
+
+            if (k !== 0) {
+                if (k > 0) eq += ` + ${k.toFixed(2)}`;
+                else eq += ` − ${Math.abs(k).toFixed(2)}`;
+            }
+            return eq;
+        }
+
+        function formatStandardEquation(a, b, c) {
+            let eq = 'y = ';
+            if (a === 1) eq += 'x²';
+            else if (a === -1) eq += '-x²';
+            else eq += `${a.toFixed(2)}x²`;
+
+            if (Math.abs(b) > 0.001) {
+                if (b > 0) eq += ` + ${b.toFixed(2)}x`;
+                else eq += ` − ${Math.abs(b).toFixed(2)}x`;
+            }
+
+            if (Math.abs(c) > 0.001) {
+                if (c > 0) eq += ` + ${c.toFixed(2)}`;
+                else eq += ` − ${Math.abs(c).toFixed(2)}`;
+            }
+            return eq;
+        }
+
+        function updateXIntercepts() {
+            const discriminant = -k / a;
+            if (discriminant < -0.001) {
+                xInterceptsValue.textContent = 'None (D < 0)';
+                return;
+            }
+            if (Math.abs(discriminant) < 0.001) {
+                xInterceptsValue.textContent = `x = ${h.toFixed(2)}`;
+                return;
+            }
+            const sqrtD = Math.sqrt(discriminant);
+            const x1 = h + sqrtD;
+            const x2 = h - sqrtD;
+            xInterceptsValue.textContent = `${Math.min(x1,x2).toFixed(2)}, ${Math.max(x1,x2).toFixed(2)}`;
+        }
+
+        // ==========================================
+        // COORDINATE CONVERSIONS
+        // ==========================================
+
+        function toPixelX(x) { return originX + x * scale; }
+        function toPixelY(y) { return originY - y * scale; }
+
+        // ==========================================
+        // DRAWING
+        // ==========================================
+
+        function draw() {
+            scale = Math.min(canvasWidth, canvasHeight) / (viewRange * 2);
+            originX = canvasWidth / 2;
+            originY = canvasHeight / 2;
+
+            ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+
+            drawGrid();
+            drawAxes();
+            drawParabola();
+            drawKeyPoints();
+        }
+
+        function drawGrid() {
+            ctx.strokeStyle = 'rgba(44, 62, 80, 0.12)';
+            ctx.lineWidth = 1;
+
+            let step = 1;
+            if (viewRange > 20) step = 2;
+            if (viewRange > 40) step = 5;
+            if (viewRange > 80) step = 10;
+            if (viewRange > 150) step = 20;
+
+            for (let x = -viewRange; x <= viewRange; x += step) {
+                const px = toPixelX(x);
+                if (px >= 0 && px <= canvasWidth) {
+                    ctx.beginPath();
+                    ctx.moveTo(px, 0);
+                    ctx.lineTo(px, canvasHeight);
+                    ctx.stroke();
+                }
+            }
+
+            for (let y = -viewRange; y <= viewRange; y += step) {
+                const py = toPixelY(y);
+                if (py >= 0 && py <= canvasHeight) {
+                    ctx.beginPath();
+                    ctx.moveTo(0, py);
+                    ctx.lineTo(canvasWidth, py);
+                    ctx.stroke();
+                }
+            }
+        }
+
+        function drawAxes() {
+            ctx.strokeStyle = '#5d6d7e';
+            ctx.lineWidth = 2;
+
+            ctx.beginPath();
+            ctx.moveTo(0, originY);
+            ctx.lineTo(canvasWidth, originY);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(originX, 0);
+            ctx.lineTo(originX, canvasHeight);
+            ctx.stroke();
+
+            // Labels
+            ctx.fillStyle = '#7f8c8d';
+            ctx.font = '12px Segoe UI';
+            ctx.textAlign = 'center';
+
+            let labelStep = 2;
+            if (viewRange > 20) labelStep = 5;
+            if (viewRange > 40) labelStep = 10;
+            if (viewRange > 80) labelStep = 20;
+            if (viewRange > 150) labelStep = 50;
+
+            for (let x = -viewRange; x <= viewRange; x += labelStep) {
+                if (x !== 0) {
+                    const px = toPixelX(x);
+                    if (px > 25 && px < canvasWidth - 25) {
+                        ctx.fillText(x.toString(), px, originY + 16);
+                    }
+                }
+            }
+
+            ctx.textAlign = 'right';
+            for (let y = -viewRange; y <= viewRange; y += labelStep) {
+                if (y !== 0) {
+                    const py = toPixelY(y);
+                    if (py > 15 && py < canvasHeight - 15) {
+                        ctx.fillText(y.toString(), originX - 6, py + 4);
+                    }
+                }
+            }
+
+            ctx.textAlign = 'right';
+            ctx.fillText('0', originX - 6, originY + 16);
+
+            ctx.fillStyle = '#5d6d7e';
+            ctx.font = 'bold 14px Segoe UI';
+            ctx.textAlign = 'left';
+            ctx.fillText('x', canvasWidth - 20, originY - 10);
+            ctx.fillText('y', originX + 10, 20);
+        }
+
+        function drawParabola() {
+            ctx.lineCap = 'round';
+
+            // Build the path
+            ctx.beginPath();
+            let started = false;
+            for (let px = 0; px < canvasWidth; px += 2) {
+                const x = (px - originX) / scale;
+                const y = a * (x - h) * (x - h) + k;
+                const py = toPixelY(y);
+
+                if (py > -200 && py < canvasHeight + 200) {
+                    if (!started) {
+                        ctx.moveTo(px, py);
+                        started = true;
+                    } else {
+                        ctx.lineTo(px, py);
+                    }
+                } else if (started) {
+                    ctx.lineTo(px, py);
+                }
+            }
+
+            // Main line
+            ctx.strokeStyle = '#2980b9';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+
+            // Draw focus point and directrix if enabled
+            if (showFocus) {
+                drawFocusAndDirectrix();
+            }
+        }
+
+        function drawFocusAndDirectrix() {
+            // Focus is at (h, k + 1/(4a))
+            const focusY = k + 1 / (4 * a);
+            const focusPx = toPixelX(h);
+            const focusPy = toPixelY(focusY);
+
+            // Directrix is at y = k - 1/(4a)
+            const directrixY = k - 1 / (4 * a);
+            const directrixPy = toPixelY(directrixY);
+
+            // Draw directrix line (dashed)
+            if (directrixPy >= 0 && directrixPy <= canvasHeight) {
+                ctx.strokeStyle = 'rgba(155, 89, 182, 0.6)';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([8, 4]);
+                ctx.beginPath();
+                ctx.moveTo(0, directrixPy);
+                ctx.lineTo(canvasWidth, directrixPy);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                // Directrix label
+                ctx.fillStyle = '#9b59b6';
+                ctx.font = '12px Segoe UI';
+                ctx.textAlign = 'left';
+                ctx.fillText('directrix', 10, directrixPy - 8);
+            }
+
+            // Draw focus point if visible
+            if (focusPx >= -30 && focusPx <= canvasWidth + 30 &&
+                focusPy >= -30 && focusPy <= canvasHeight + 30) {
+
+                // Outer circle (ring)
+                ctx.strokeStyle = '#9b59b6';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(focusPx, focusPy, 12, 0, Math.PI * 2);
+                ctx.stroke();
+
+                // Inner filled circle
+                ctx.fillStyle = '#9b59b6';
+                ctx.beginPath();
+                ctx.arc(focusPx, focusPy, 5, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Focus label with coordinates
+                const focusText = `F (${h.toFixed(2)}, ${focusY.toFixed(2)})`;
+                ctx.font = 'bold 12px Courier New';
+                const textWidth = ctx.measureText(focusText).width;
+
+                let labelX = focusPx + 18;
+                let labelY = focusPy - 5;
+
+                if (labelX + textWidth + 8 > canvasWidth) labelX = focusPx - textWidth - 22;
+                if (labelY < 20) labelY = focusPy + 20;
+
+                // Label background
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+                ctx.beginPath();
+                ctx.roundRect(labelX - 4, labelY - 12, textWidth + 8, 18, 4);
+                ctx.fill();
+
+                ctx.strokeStyle = '#9b59b6';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+
+                // Label text
+                ctx.fillStyle = '#9b59b6';
+                ctx.textAlign = 'left';
+                ctx.fillText(focusText, labelX, labelY);
+            }
+        }
+
+        function drawKeyPoints() {
+            // Vertex
+            drawPoint(h, k, '#e74c3c', 'V');
+
+            // Y-intercept
+            const yInt = a * h * h + k;
+            drawPoint(0, yInt, '#27ae60', 'Y');
+
+            // X-intercepts
+            const discriminant = -k / a;
+            if (discriminant >= -0.001) {
+                if (Math.abs(discriminant) < 0.001) {
+                    drawPoint(h, 0, '#f39c12', 'X');
+                } else if (discriminant > 0) {
+                    const sqrtD = Math.sqrt(discriminant);
+                    drawPoint(h + sqrtD, 0, '#f39c12', 'X₁');
+                    drawPoint(h - sqrtD, 0, '#f39c12', 'X₂');
+                }
+            }
+        }
+
+        function drawPoint(x, y, color, label) {
+            const px = toPixelX(x);
+            const py = toPixelY(y);
+
+            if (px < -50 || px > canvasWidth + 50 || py < -50 || py > canvasHeight + 50) {
+                return;
+            }
+
+            // Soft glow/shadow
+            ctx.shadowColor = color;
+            ctx.shadowBlur = 10;
+
+            // Point
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.arc(px, py, 9, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.shadowBlur = 0;
+
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+
+            // Coordinate label
+            const coordText = `(${x.toFixed(2)}, ${y.toFixed(2)})`;
+            ctx.font = 'bold 13px Courier New';
+            const textWidth = ctx.measureText(coordText).width;
+
+            let labelX = px + 15;
+            let labelY = py - 15;
+
+            if (labelX + textWidth + 10 > canvasWidth) labelX = px - textWidth - 20;
+            if (labelY < 25) labelY = py + 30;
+            if (labelX < 5) labelX = 5;
+
+            // Label background
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+            ctx.beginPath();
+            ctx.roundRect(labelX - 6, labelY - 16, textWidth + 12, 22, 6);
+            ctx.fill();
+
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Label text
+            ctx.fillStyle = color;
+            ctx.textAlign = 'left';
+            ctx.fillText(coordText, labelX, labelY);
+        }
+
+        // ==========================================
+        // CHALLENGE SYSTEM
+        // ==========================================
+
+        function updateChallengeText() {
+            challengeTextEl.innerHTML = challenges[currentChallenge].text;
+            challengeProgressEl.textContent = `Challenge ${currentChallenge + 1} of ${challenges.length}`;
+        }
+
+        function checkChallenge() {
+            const isCorrect = challenges[currentChallenge].check();
+            feedbackEl.textContent = isCorrect ? 'Correct! Well done!' : 'Not quite. Keep trying!';
+            feedbackEl.className = 'feedback ' + (isCorrect ? 'correct' : 'incorrect');
+        }
+
+        function nextChallenge() {
+            currentChallenge = (currentChallenge + 1) % challenges.length;
+            updateChallengeText();
+            hideFeedback();
+        }
+
+        function hideFeedback() {
+            feedbackEl.className = 'feedback';
+        }
+
+        // ==========================================
+        // START
+        // ==========================================
+
+        init();
+    </script>
+</body>
+</html>

@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Waves & Sound Explorer</title>
+
+    <!-- Yandex.Metrika counter -->
+    <script type="text/javascript">
+        (function(m,e,t,r,i,k,a){
+            m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+            m[i].l=1*new Date();
+            for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+            k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+        })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=106371504', 'ym');
+
+        ym(106371504, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+    </script>
+    <noscript><div><img src="https://mc.yandex.ru/watch/106371504" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+    <!-- /Yandex.Metrika counter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Reset and base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f7fa;
+            color: #2d3748;
+        }
+
+        /* Main container - fills viewport without scroll on desktop */
+        .container {
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: 1fr 360px;
+            grid-template-rows: auto 1fr;
+            gap: 12px;
+            padding: 12px;
+        }
+
+        /* Desktop: prevent scroll */
+        @media (min-width: 901px) {
+            html, body {
+                overflow: hidden;
+            }
+            .container {
+                height: 100vh;
+            }
+        }
+
+        /* Header */
+        header {
+            grid-column: 1 / -1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #4a6cf7 0%, #6366f1 100%);
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.25);
+        }
+
+        header h1 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: -0.02em;
+        }
+
+        /* Sound toggle button */
+        .sound-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            border-radius: 20px;
+            color: #ffffff;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .sound-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .sound-toggle.active {
+            background: #ffffff;
+            color: #4a6cf7;
+            border-color: #ffffff;
+        }
+
+        .sound-icon {
+            font-size: 1.1rem;
+        }
+
+        /* Wave display area */
+        .wave-section {
+            display: flex;
+            flex-direction: column;
+            background: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e2e8f0;
+        }
+
+        .canvas-container {
+            flex: 1;
+            position: relative;
+            min-height: 0;
+        }
+
+        #waveCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        /* Dynamic explanation bar */
+        .explanation-bar {
+            padding: 10px 16px;
+            background: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+            font-size: 0.9rem;
+            color: #4a6cf7;
+            text-align: center;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+        }
+
+        /* Control panel */
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 12px;
+            overflow-y: auto;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e2e8f0;
+        }
+
+        /* Wave section header */
+        .wave-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 10px;
+            background: #f8fafc;
+            border-radius: 8px;
+            margin-bottom: 4px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .wave-header h3 {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .wave-header.wave1 h3 { color: #0891b2; }
+        .wave-header.wave2 h3 { color: #e11d48; }
+
+        .wave-toggle {
+            padding: 4px 10px;
+            font-size: 0.75rem;
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            color: #64748b;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .wave-toggle.active {
+            background: #0891b2;
+            color: #ffffff;
+            border-color: #0891b2;
+        }
+
+        .wave-toggle.active.wave2 {
+            background: #e11d48;
+            border-color: #e11d48;
+        }
+
+        .control-group {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 10px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .control-group.disabled {
+            opacity: 0.4;
+            pointer-events: none;
+        }
+
+        .control-group h4 {
+            font-size: 0.75rem;
+            color: #64748b;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .slider-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+
+        .slider-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .slider-row label {
+            font-size: 0.8rem;
+            color: #64748b;
+            min-width: 20px;
+            font-weight: 600;
+        }
+
+        .slider-row input[type="range"] {
+            flex: 1;
+            height: 6px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: #e2e8f0;
+            border-radius: 3px;
+            outline: none;
+        }
+
+        .slider-row input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            background: #0891b2;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.1s;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+        }
+
+        .slider-row input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.15);
+        }
+
+        .slider-value {
+            min-width: 40px;
+            text-align: right;
+            font-family: 'Inter', monospace;
+            font-size: 0.8rem;
+            color: #2d3748;
+            font-weight: 600;
+        }
+
+        /* Wave 1 sliders - teal */
+        .wave1-controls .slider-row input[type="range"]::-webkit-slider-thumb {
+            background: #0891b2;
+        }
+
+        /* Wave 2 sliders - rose */
+        .wave2-controls .slider-row input[type="range"]::-webkit-slider-thumb {
+            background: #e11d48;
+        }
+
+        /* Presets section */
+        .resonance-section {
+            flex: 1;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 8px;
+            padding: 14px;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .resonance-section h4 {
+            font-size: 0.85rem;
+            color: #6366f1;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .resonance-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            flex: 1;
+        }
+
+        .resonance-btn {
+            padding: 12px 10px;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            color: #2d3748;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .resonance-btn:hover {
+            background: #f8fafc;
+            border-color: #6366f1;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 6px rgba(99, 102, 241, 0.15);
+        }
+
+        .resonance-btn:active {
+            transform: translateY(0);
+        }
+
+        .resonance-btn small {
+            font-size: 0.65rem;
+            opacity: 0.6;
+            font-weight: normal;
+        }
+
+        .resonance-indicator {
+            margin-top: 12px;
+            padding: 10px;
+            background: #ffffff;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            text-align: center;
+            line-height: 1.4;
+            border: 1px solid #e2e8f0;
+            color: #64748b;
+        }
+
+        .resonance-indicator.constructive {
+            color: #059669;
+            background: #ecfdf5;
+            border-color: #a7f3d0;
+        }
+
+        .resonance-indicator.destructive {
+            color: #dc2626;
+            background: #fef2f2;
+            border-color: #fecaca;
+        }
+
+        .resonance-indicator.partial {
+            color: #d97706;
+            background: #fffbeb;
+            border-color: #fde68a;
+        }
+
+        /* Legend */
+        .legend {
+            display: flex;
+            gap: 12px;
+            padding: 8px 10px;
+            background: #f8fafc;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 500;
+            color: #475569;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 4px;
+            border-radius: 2px;
+        }
+
+        .legend-color.wave1 { background: #0891b2; }
+        .legend-color.wave2 { background: #e11d48; }
+        .legend-color.combined { background: #f59e0b; height: 4px; }
+
+        /* Presets section */
+        .presets-section h4 {
+            font-size: 0.75rem;
+            color: #64748b;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .preset-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .preset-btn {
+            padding: 6px 10px;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            color: #2d3748;
+            cursor: pointer;
+            font-size: 0.75rem;
+            text-align: left;
+            transition: all 0.2s;
+        }
+
+        .preset-btn:hover {
+            background: #f8fafc;
+            border-color: #6366f1;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 900px) {
+            html, body {
+                overflow: auto;
+                height: auto;
+            }
+
+            .container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto auto;
+                gap: 8px;
+                padding: 8px;
+                min-height: 100vh;
+                height: auto;
+            }
+
+            header {
+                padding: 10px 12px;
+            }
+
+            header h1 {
+                font-size: 1.1rem;
+            }
+
+            .sound-toggle {
+                padding: 5px 10px;
+                font-size: 0.8rem;
+            }
+
+            .wave-section {
+                min-height: 35vh;
+                max-height: 45vh;
+            }
+
+            .explanation-bar {
+                padding: 8px 12px;
+                font-size: 0.8rem;
+                min-height: 36px;
+            }
+
+            .controls {
+                padding: 10px;
+                gap: 6px;
+            }
+
+            .legend {
+                flex-wrap: wrap;
+                gap: 8px;
+                padding: 6px 8px;
+                font-size: 0.7rem;
+                justify-content: center;
+            }
+
+            .wave1-controls, .wave2-controls {
+                width: 100%;
+            }
+
+            .wave-header {
+                padding: 6px 8px;
+            }
+
+            .wave-header h3 {
+                font-size: 0.8rem;
+            }
+
+            .control-group {
+                padding: 8px;
+            }
+
+            .slider-row {
+                gap: 6px;
+                margin-bottom: 8px;
+            }
+
+            .slider-row label {
+                font-size: 0.75rem;
+                min-width: 18px;
+            }
+
+            .slider-row input[type="range"] {
+                height: 8px;
+            }
+
+            .slider-row input[type="range"]::-webkit-slider-thumb {
+                width: 22px;
+                height: 22px;
+            }
+
+            .slider-value {
+                font-size: 0.75rem;
+                min-width: 36px;
+            }
+
+            .resonance-section {
+                padding: 10px;
+            }
+
+            .resonance-section h4 {
+                font-size: 0.8rem;
+                margin-bottom: 8px;
+            }
+
+            .resonance-buttons {
+                gap: 6px;
+            }
+
+            .resonance-btn {
+                padding: 10px 8px;
+                font-size: 0.8rem;
+            }
+
+            .resonance-btn small {
+                font-size: 0.6rem;
+            }
+
+            .resonance-indicator {
+                margin-top: 8px;
+                padding: 8px;
+                font-size: 0.8rem;
+            }
+        }
+
+        /* Small phones */
+        @media (max-width: 420px) {
+            .container {
+                padding: 6px;
+                gap: 6px;
+            }
+
+            header h1 {
+                font-size: 1rem;
+            }
+
+            .legend {
+                font-size: 0.65rem;
+            }
+
+            .legend-color {
+                width: 16px;
+            }
+
+            .resonance-buttons {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .resonance-btn {
+                padding: 8px 6px;
+                font-size: 0.75rem;
+            }
+        }
+
+        /* Landscape mode on mobile */
+        @media (max-width: 900px) and (orientation: landscape) {
+            html, body {
+                overflow: auto;
+            }
+
+            .container {
+                grid-template-columns: 1fr 280px;
+                grid-template-rows: auto 1fr;
+                min-height: 100vh;
+            }
+
+            .wave-section {
+                min-height: 0;
+                max-height: none;
+            }
+
+            .controls {
+                overflow-y: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <h1>Waves & Sound Explorer</h1>
+            <button class="sound-toggle" id="soundToggle">
+                <span class="sound-icon">🔇</span>
+                <span>Sound Off</span>
+            </button>
+        </header>
+
+        <!-- Wave visualization -->
+        <section class="wave-section">
+            <div class="canvas-container">
+                <canvas id="waveCanvas"></canvas>
+            </div>
+            <div class="explanation-bar" id="explanationBar">
+                Adjust the sliders to explore how waves work!
+            </div>
+        </section>
+
+        <!-- Controls panel -->
+        <aside class="controls">
+            <!-- Legend -->
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color wave1"></div>
+                    <span>Wave 1</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color wave2"></div>
+                    <span>Wave 2</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color combined"></div>
+                    <span>Combined</span>
+                </div>
+            </div>
+
+            <!-- Wave 1 Controls -->
+            <div class="wave1-controls">
+                <div class="wave-header wave1">
+                    <h3>Wave 1</h3>
+                </div>
+                <div class="control-group">
+                    <div class="slider-row">
+                        <label>A</label>
+                        <input type="range" id="amp1" min="0" max="5" step="0.1" value="2">
+                        <span class="slider-value" id="amp1Val">2.0</span>
+                    </div>
+                    <div class="slider-row">
+                        <label>F</label>
+                        <input type="range" id="freq1" min="0.5" max="5" step="0.1" value="1">
+                        <span class="slider-value" id="freq1Val">1.0</span>
+                    </div>
+                    <div class="slider-row">
+                        <label>φ</label>
+                        <input type="range" id="phase1" min="0" max="360" step="1" value="0">
+                        <span class="slider-value" id="phase1Val">0°</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Wave 2 Controls -->
+            <div class="wave2-controls">
+                <div class="wave-header wave2">
+                    <h3>Wave 2</h3>
+                    <button class="wave-toggle wave2 active" id="wave2Toggle">ON</button>
+                </div>
+                <div class="control-group" id="wave2Controls">
+                    <div class="slider-row">
+                        <label>A</label>
+                        <input type="range" id="amp2" min="0" max="5" step="0.1" value="2">
+                        <span class="slider-value" id="amp2Val">2.0</span>
+                    </div>
+                    <div class="slider-row">
+                        <label>F</label>
+                        <input type="range" id="freq2" min="0.5" max="5" step="0.1" value="1">
+                        <span class="slider-value" id="freq2Val">1.0</span>
+                    </div>
+                    <div class="slider-row">
+                        <label>φ</label>
+                        <input type="range" id="phase2" min="0" max="360" step="1" value="0">
+                        <span class="slider-value" id="phase2Val">0°</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Presets Section -->
+            <div class="resonance-section">
+                <h4>Presets</h4>
+                <div class="resonance-buttons">
+                    <button class="resonance-btn" data-preset="constructive">
+                        Constructive
+                    </button>
+                    <button class="resonance-btn" data-preset="destructive">
+                        Destructive
+                    </button>
+                    <button class="resonance-btn" data-preset="beats">
+                        Beats
+                    </button>
+                    <button class="resonance-btn" data-preset="harmonic">
+                        Harmonic
+                    </button>
+                    <button class="resonance-btn" data-preset="loud">
+                        Loud<br><small>(single wave)</small>
+                    </button>
+                    <button class="resonance-btn" data-preset="highPitch">
+                        High Pitch<br><small>(single wave)</small>
+                    </button>
+                </div>
+                <div class="resonance-indicator" id="resonanceIndicator">
+                    Same frequency, same phase = waves add up
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <script>
+        // ============================================
+        // WAVE & SOUND EXPLORER - Main Application
+        // ============================================
+
+        // --- Configuration ---
+        const CONFIG = {
+            wave1Color: '#0891b2',
+            wave2Color: '#e11d48',
+            combinedColor: '#f59e0b',
+            waveLineWidth: 2.5,
+            combinedLineWidth: 3,
+            gridColor: '#e2e8f0',
+            axisColor: '#94a3b8',
+            canvasBg: '#ffffff',
+            baseFrequency: 220,
+            maxVolume: 0.4,
+            animationSpeed: 0.03
+        };
+
+        // --- State ---
+        const state = {
+            wave1: { amplitude: 2, frequency: 1, phase: 0 },
+            wave2: { amplitude: 2, frequency: 1, phase: 0, enabled: true },
+            soundEnabled: false,
+            animationOffset: 0
+        };
+
+        // --- DOM Elements ---
+        const canvas = document.getElementById('waveCanvas');
+        const ctx = canvas.getContext('2d');
+        const soundToggle = document.getElementById('soundToggle');
+        const explanationBar = document.getElementById('explanationBar');
+        const wave2Toggle = document.getElementById('wave2Toggle');
+        const wave2Controls = document.getElementById('wave2Controls');
+        const resonanceIndicator = document.getElementById('resonanceIndicator');
+
+        // --- Audio Context (lazy init) ---
+        let audioContext = null;
+        let oscillator1 = null;
+        let oscillator2 = null;
+        let gainNode1 = null;
+        let gainNode2 = null;
+
+        /**
+         * Calculate combined amplitude for same-frequency waves with phase difference
+         */
+        function calculateCombinedAmplitude(a1, a2, phaseDiffDegrees) {
+            const phaseDiffRad = (phaseDiffDegrees * Math.PI) / 180;
+            return Math.sqrt(a1 * a1 + a2 * a2 + 2 * a1 * a2 * Math.cos(phaseDiffRad));
+        }
+
+        /**
+         * Create and start oscillators - must be called from user gesture
+         */
+        function createOscillators() {
+            if (!audioContext) return;
+
+            // Stop existing oscillators
+            stopOscillators();
+
+            // Create new oscillators
+            oscillator1 = audioContext.createOscillator();
+            oscillator1.type = 'sine';
+            gainNode1 = audioContext.createGain();
+            gainNode1.gain.value = 0;
+            oscillator1.connect(gainNode1);
+            gainNode1.connect(audioContext.destination);
+
+            oscillator2 = audioContext.createOscillator();
+            oscillator2.type = 'sine';
+            gainNode2 = audioContext.createGain();
+            gainNode2.gain.value = 0;
+            oscillator2.connect(gainNode2);
+            gainNode2.connect(audioContext.destination);
+
+            // Start oscillators
+            oscillator1.start(0);
+            oscillator2.start(0);
+        }
+
+        /**
+         * Stop oscillators
+         */
+        function stopOscillators() {
+            try {
+                if (oscillator1) {
+                    oscillator1.stop();
+                    oscillator1.disconnect();
+                }
+                if (oscillator2) {
+                    oscillator2.stop();
+                    oscillator2.disconnect();
+                }
+            } catch (e) {
+                // Ignore errors when stopping
+            }
+            oscillator1 = null;
+            oscillator2 = null;
+            gainNode1 = null;
+            gainNode2 = null;
+        }
+
+        /**
+         * Update audio parameters
+         */
+        function updateAudio() {
+            if (!audioContext || !state.soundEnabled || !oscillator1 || !gainNode1) return;
+
+            const now = audioContext.currentTime;
+            const freq1 = CONFIG.baseFrequency * state.wave1.frequency;
+            const freq2 = CONFIG.baseFrequency * state.wave2.frequency;
+            const freqRatio = freq1 / freq2;
+            const sameFreq = Math.abs(freqRatio - 1) < 0.05;
+
+            // Set frequencies immediately
+            oscillator1.frequency.setValueAtTime(freq1, now);
+            if (oscillator2) oscillator2.frequency.setValueAtTime(freq2, now);
+
+            if (state.wave2.enabled && sameFreq) {
+                // Same frequency: calculate combined amplitude
+                const phaseDiff = state.wave1.phase - state.wave2.phase;
+                const a1 = state.wave1.amplitude / 5;
+                const a2 = state.wave2.amplitude / 5;
+                const combinedAmp = calculateCombinedAmplitude(a1, a2, phaseDiff);
+
+                gainNode1.gain.setValueAtTime(combinedAmp * CONFIG.maxVolume, now);
+                if (gainNode2) gainNode2.gain.setValueAtTime(0, now);
+            } else {
+                // Different frequencies or wave2 disabled
+                const vol1 = (state.wave1.amplitude / 5) * CONFIG.maxVolume;
+                gainNode1.gain.setValueAtTime(vol1, now);
+
+                if (state.wave2.enabled && gainNode2) {
+                    const vol2 = (state.wave2.amplitude / 5) * CONFIG.maxVolume;
+                    gainNode2.gain.setValueAtTime(vol2, now);
+                } else if (gainNode2) {
+                    gainNode2.gain.setValueAtTime(0, now);
+                }
+            }
+        }
+
+        /**
+         * Toggle sound on/off - must be called from user gesture for mobile
+         */
+        async function toggleSound() {
+            try {
+                // Create AudioContext on first user interaction (required for mobile)
+                if (!audioContext) {
+                    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                    if (!AudioContextClass) {
+                        alert('Audio not supported');
+                        return;
+                    }
+                    audioContext = new AudioContextClass();
+                }
+
+                // Always try to resume (required for iOS)
+                if (audioContext.state === 'suspended') {
+                    await audioContext.resume();
+                }
+
+                state.soundEnabled = !state.soundEnabled;
+
+                if (state.soundEnabled) {
+                    // Create fresh oscillators when enabling sound
+                    createOscillators();
+                    // Small delay for mobile
+                    setTimeout(() => {
+                        updateAudio();
+                    }, 50);
+                    soundToggle.classList.add('active');
+                    soundToggle.innerHTML = '<span class="sound-icon">🔊</span><span>Sound On</span>';
+                } else {
+                    // Stop oscillators when disabling
+                    stopOscillators();
+                    soundToggle.classList.remove('active');
+                    soundToggle.innerHTML = '<span class="sound-icon">🔇</span><span>Sound Off</span>';
+                }
+            } catch (e) {
+                console.error('Audio error:', e);
+                alert('Could not start audio: ' + e.message);
+            }
+        }
+
+        /**
+         * Toggle wave 2 on/off
+         */
+        function toggleWave2() {
+            state.wave2.enabled = !state.wave2.enabled;
+            wave2Toggle.textContent = state.wave2.enabled ? 'ON' : 'OFF';
+            wave2Toggle.classList.toggle('active', state.wave2.enabled);
+            wave2Controls.classList.toggle('disabled', !state.wave2.enabled);
+            updateAudio();
+            updateResonanceIndicator();
+        }
+
+        /**
+         * Resize canvas
+         */
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = container.clientWidth * dpr;
+            canvas.height = container.clientHeight * dpr;
+            ctx.scale(dpr, dpr);
+            canvas.style.width = container.clientWidth + 'px';
+            canvas.style.height = container.clientHeight + 'px';
+        }
+
+        /**
+         * Calculate wave Y value at given X
+         */
+        function getWaveY(wave, x, width, offset) {
+            const phaseRad = (wave.phase * Math.PI) / 180;
+            const waveX = (x / width) * wave.frequency * 2 * Math.PI;
+            return Math.sin(waveX + phaseRad + offset) * wave.amplitude;
+        }
+
+        /**
+         * Draw wave visualization
+         */
+        function drawWave() {
+            const width = canvas.width / (window.devicePixelRatio || 1);
+            const height = canvas.height / (window.devicePixelRatio || 1);
+            const centerY = height / 2;
+            const maxAmp = height * 0.35;
+            const scale = maxAmp / 5;
+
+            // Clear
+            ctx.fillStyle = CONFIG.canvasBg;
+            ctx.fillRect(0, 0, width, height);
+
+            // Grid
+            ctx.strokeStyle = CONFIG.gridColor;
+            ctx.lineWidth = 1;
+            const gridSpacing = 40;
+            for (let y = gridSpacing; y < height; y += gridSpacing) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(width, y);
+                ctx.stroke();
+            }
+            for (let x = gridSpacing; x < width; x += gridSpacing) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, height);
+                ctx.stroke();
+            }
+
+            // Center axis
+            ctx.strokeStyle = CONFIG.axisColor;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(0, centerY);
+            ctx.lineTo(width, centerY);
+            ctx.stroke();
+
+            // Draw Wave 1
+            ctx.strokeStyle = CONFIG.wave1Color;
+            ctx.lineWidth = CONFIG.waveLineWidth;
+            ctx.lineCap = 'round';
+            ctx.beginPath();
+            for (let x = 0; x <= width; x++) {
+                const y = getWaveY(state.wave1, x, width, state.animationOffset);
+                const screenY = centerY - y * scale;
+                if (x === 0) ctx.moveTo(x, screenY);
+                else ctx.lineTo(x, screenY);
+            }
+            ctx.stroke();
+
+            // Draw Wave 2 (if enabled)
+            if (state.wave2.enabled) {
+                ctx.strokeStyle = CONFIG.wave2Color;
+                ctx.lineWidth = CONFIG.waveLineWidth;
+                ctx.beginPath();
+                for (let x = 0; x <= width; x++) {
+                    const y = getWaveY(state.wave2, x, width, state.animationOffset);
+                    const screenY = centerY - y * scale;
+                    if (x === 0) ctx.moveTo(x, screenY);
+                    else ctx.lineTo(x, screenY);
+                }
+                ctx.stroke();
+
+                // Draw Combined Wave
+                ctx.strokeStyle = CONFIG.combinedColor;
+                ctx.lineWidth = CONFIG.combinedLineWidth;
+                ctx.beginPath();
+                for (let x = 0; x <= width; x++) {
+                    const y1 = getWaveY(state.wave1, x, width, state.animationOffset);
+                    const y2 = getWaveY(state.wave2, x, width, state.animationOffset);
+                    const combined = y1 + y2;
+                    const screenY = centerY - combined * scale;
+                    if (x === 0) ctx.moveTo(x, screenY);
+                    else ctx.lineTo(x, screenY);
+                }
+                ctx.stroke();
+            }
+        }
+
+        /**
+         * Animation loop
+         */
+        function animate() {
+            state.animationOffset += CONFIG.animationSpeed;
+            drawWave();
+            requestAnimationFrame(animate);
+        }
+
+        /**
+         * Check if two frequencies form a harmonic relationship
+         */
+        function getHarmonicRatio(freq1, freq2) {
+            const ratio = freq1 / freq2;
+            const inverseRatio = freq2 / freq1;
+
+            // Check ratios 2, 3, 4, 5 in both directions
+            for (let n = 2; n <= 5; n++) {
+                if (Math.abs(ratio - n) < 0.08) return { ratio: n, type: 'higher' };
+                if (Math.abs(inverseRatio - n) < 0.08) return { ratio: n, type: 'lower' };
+            }
+            return null;
+        }
+
+        /**
+         * Update resonance indicator
+         */
+        function updateResonanceIndicator() {
+            if (!state.wave2.enabled) {
+                resonanceIndicator.textContent = 'Single wave mode. Enable Wave 2 to explore interference.';
+                resonanceIndicator.className = 'resonance-indicator';
+                return;
+            }
+
+            const freqRatio = state.wave1.frequency / state.wave2.frequency;
+            const phaseDiff = Math.abs(state.wave1.phase - state.wave2.phase);
+            const sameFreq = Math.abs(freqRatio - 1) < 0.05;
+            const harmonic = getHarmonicRatio(state.wave1.frequency, state.wave2.frequency);
+
+            // Calculate combined amplitude for display
+            const a1 = state.wave1.amplitude;
+            const a2 = state.wave2.amplitude;
+            const combinedAmp = calculateCombinedAmplitude(a1, a2, phaseDiff);
+
+            if (sameFreq) {
+                if (phaseDiff < 20 || phaseDiff > 340) {
+                    resonanceIndicator.textContent = `Constructive: waves add up! Combined amplitude: ${combinedAmp.toFixed(1)}`;
+                    resonanceIndicator.className = 'resonance-indicator constructive';
+                } else if (phaseDiff > 160 && phaseDiff < 200) {
+                    resonanceIndicator.textContent = `Destructive: waves cancel! Combined amplitude: ${combinedAmp.toFixed(1)}`;
+                    resonanceIndicator.className = 'resonance-indicator destructive';
+                } else {
+                    resonanceIndicator.textContent = `Partial interference (${phaseDiff}° phase diff). Combined: ${combinedAmp.toFixed(1)}`;
+                    resonanceIndicator.className = 'resonance-indicator partial';
+                }
+            } else if (Math.abs(freqRatio - 1) < 0.15) {
+                const freqDiff = Math.abs(state.wave1.frequency - state.wave2.frequency);
+                const beatHz = Math.round(freqDiff * 220); // CONFIG.baseFrequency = 220
+                resonanceIndicator.textContent = `Beat pattern: frequencies differ by ${(freqDiff * 100).toFixed(0)}% — creates ${beatHz} Hz pulsing`;
+                resonanceIndicator.className = 'resonance-indicator partial';
+            } else if (harmonic) {
+                const intervalNames = { 2: 'octave', 3: 'perfect fifth + octave', 4: 'two octaves', 5: 'major third + two octaves' };
+                const intervalName = intervalNames[harmonic.ratio] || `${harmonic.ratio}:1`;
+                if (harmonic.type === 'lower') {
+                    resonanceIndicator.textContent = `Harmonic 1:${harmonic.ratio} — Wave 2 is ${harmonic.ratio}x higher (${intervalName})`;
+                } else {
+                    resonanceIndicator.textContent = `Harmonic ${harmonic.ratio}:1 — Wave 1 is ${harmonic.ratio}x higher (${intervalName})`;
+                }
+                resonanceIndicator.className = 'resonance-indicator constructive';
+            } else {
+                resonanceIndicator.textContent = 'Complex interference: non-harmonic frequencies';
+                resonanceIndicator.className = 'resonance-indicator';
+            }
+        }
+
+        /**
+         * Update explanation text
+         */
+        function updateExplanation(waveNum, param) {
+            const wave = waveNum === 1 ? state.wave1 : state.wave2;
+            const explanations = {
+                amplitude: `Wave ${waveNum} amplitude = ${wave.amplitude.toFixed(1)} → ${wave.amplitude > 2.5 ? 'Louder' : wave.amplitude < 1 ? 'Quieter' : 'Medium'}`,
+                frequency: `Wave ${waveNum} frequency = ${wave.frequency.toFixed(1)} → ${wave.frequency > 2.5 ? 'Higher pitch' : wave.frequency < 1 ? 'Lower pitch' : 'Medium pitch'}`,
+                phase: `Wave ${waveNum} phase = ${wave.phase}° → ${wave.phase > 0 ? 'Starting point moved' : 'No shift'}`
+            };
+            explanationBar.textContent = explanations[param] || 'Adjust sliders to explore!';
+        }
+
+        /**
+         * Handle slider changes
+         */
+        function setupSliders() {
+            // Wave 1
+            const amp1 = document.getElementById('amp1');
+            const freq1 = document.getElementById('freq1');
+            const phase1 = document.getElementById('phase1');
+
+            amp1.addEventListener('input', (e) => {
+                state.wave1.amplitude = parseFloat(e.target.value);
+                document.getElementById('amp1Val').textContent = state.wave1.amplitude.toFixed(1);
+                updateExplanation(1, 'amplitude');
+                updateAudio();
+                updateResonanceIndicator();
+            });
+
+            freq1.addEventListener('input', (e) => {
+                state.wave1.frequency = parseFloat(e.target.value);
+                document.getElementById('freq1Val').textContent = state.wave1.frequency.toFixed(1);
+                updateExplanation(1, 'frequency');
+                updateAudio();
+                updateResonanceIndicator();
+            });
+
+            phase1.addEventListener('input', (e) => {
+                state.wave1.phase = parseFloat(e.target.value);
+                document.getElementById('phase1Val').textContent = state.wave1.phase + '°';
+                updateExplanation(1, 'phase');
+                updateAudio();
+                updateResonanceIndicator();
+            });
+
+            // Wave 2
+            const amp2 = document.getElementById('amp2');
+            const freq2 = document.getElementById('freq2');
+            const phase2 = document.getElementById('phase2');
+
+            amp2.addEventListener('input', (e) => {
+                state.wave2.amplitude = parseFloat(e.target.value);
+                document.getElementById('amp2Val').textContent = state.wave2.amplitude.toFixed(1);
+                updateExplanation(2, 'amplitude');
+                updateAudio();
+                updateResonanceIndicator();
+            });
+
+            freq2.addEventListener('input', (e) => {
+                state.wave2.frequency = parseFloat(e.target.value);
+                document.getElementById('freq2Val').textContent = state.wave2.frequency.toFixed(1);
+                updateExplanation(2, 'frequency');
+                updateAudio();
+                updateResonanceIndicator();
+            });
+
+            phase2.addEventListener('input', (e) => {
+                state.wave2.phase = parseFloat(e.target.value);
+                document.getElementById('phase2Val').textContent = state.wave2.phase + '°';
+                updateExplanation(2, 'phase');
+                updateAudio();
+                updateResonanceIndicator();
+            });
+        }
+
+        /**
+         * Apply preset
+         */
+        function applyPreset(preset) {
+            // Interference presets need wave 2 enabled
+            const interferencePresets = ['constructive', 'destructive', 'beats', 'harmonic'];
+            // Single wave presets disable wave 2
+            const singleWavePresets = ['loud', 'highPitch'];
+
+            if (interferencePresets.includes(preset)) {
+                state.wave2.enabled = true;
+                wave2Toggle.textContent = 'ON';
+                wave2Toggle.classList.add('active');
+                wave2Controls.classList.remove('disabled');
+            } else if (singleWavePresets.includes(preset)) {
+                state.wave2.enabled = false;
+                wave2Toggle.textContent = 'OFF';
+                wave2Toggle.classList.remove('active');
+                wave2Controls.classList.add('disabled');
+            }
+
+            switch (preset) {
+                case 'constructive':
+                    state.wave1 = { amplitude: 2, frequency: 1.5, phase: 0 };
+                    state.wave2 = { ...state.wave2, amplitude: 2, frequency: 1.5, phase: 0 };
+                    explanationBar.textContent = 'Constructive: waves in phase add together (2+2=4)';
+                    break;
+                case 'destructive':
+                    state.wave1 = { amplitude: 2, frequency: 1.5, phase: 0 };
+                    state.wave2 = { ...state.wave2, amplitude: 2, frequency: 1.5, phase: 180 };
+                    explanationBar.textContent = 'Destructive: waves 180° apart cancel out (2-2=0)';
+                    break;
+                case 'beats':
+                    state.wave1 = { amplitude: 2, frequency: 2, phase: 0 };
+                    state.wave2 = { ...state.wave2, amplitude: 2, frequency: 2.1, phase: 0 };
+                    explanationBar.textContent = 'Beats: slightly different frequencies create "wah-wah" pulsing effect';
+                    break;
+                case 'harmonic':
+                    state.wave1 = { amplitude: 2.5, frequency: 1, phase: 0 };
+                    state.wave2 = { ...state.wave2, amplitude: 1.5, frequency: 2, phase: 0 };
+                    explanationBar.innerHTML = 'Harmonic: Wave 2 is 2x frequency of Wave 1 (one octave higher). &nbsp;Harmonics create pleasant musical intervals.';
+                    break;
+                case 'loud':
+                    state.wave1 = { amplitude: 4.5, frequency: 1.5, phase: 0 };
+                    state.wave2 = { ...state.wave2, amplitude: 2, frequency: 1, phase: 0 };
+                    explanationBar.textContent = 'Amplitude controls volume: higher amplitude = louder sound';
+                    break;
+                case 'highPitch':
+                    state.wave1 = { amplitude: 2, frequency: 4, phase: 0 };
+                    state.wave2 = { ...state.wave2, amplitude: 2, frequency: 1, phase: 0 };
+                    explanationBar.textContent = 'Frequency controls pitch: higher frequency = higher pitch';
+                    break;
+            }
+
+            updateSliderDisplays();
+            updateAudio();
+            updateResonanceIndicator();
+        }
+
+        /**
+         * Update all slider displays to match state
+         */
+        function updateSliderDisplays() {
+            document.getElementById('amp1').value = state.wave1.amplitude;
+            document.getElementById('freq1').value = state.wave1.frequency;
+            document.getElementById('phase1').value = state.wave1.phase;
+            document.getElementById('amp1Val').textContent = state.wave1.amplitude.toFixed(1);
+            document.getElementById('freq1Val').textContent = state.wave1.frequency.toFixed(1);
+            document.getElementById('phase1Val').textContent = state.wave1.phase + '°';
+
+            document.getElementById('amp2').value = state.wave2.amplitude;
+            document.getElementById('freq2').value = state.wave2.frequency;
+            document.getElementById('phase2').value = state.wave2.phase;
+            document.getElementById('amp2Val').textContent = state.wave2.amplitude.toFixed(1);
+            document.getElementById('freq2Val').textContent = state.wave2.frequency.toFixed(1);
+            document.getElementById('phase2Val').textContent = state.wave2.phase + '°';
+        }
+
+        // --- Event Listeners ---
+
+        // Sound toggle - prevent double triggering on mobile
+        let lastSoundToggle = 0;
+        function handleSoundToggle(e) {
+            e.preventDefault();
+            const now = Date.now();
+            if (now - lastSoundToggle < 300) return; // Debounce
+            lastSoundToggle = now;
+            toggleSound();
+        }
+
+        soundToggle.addEventListener('click', handleSoundToggle);
+        soundToggle.addEventListener('touchend', handleSoundToggle, { passive: false });
+
+        wave2Toggle.addEventListener('click', toggleWave2);
+
+        document.querySelectorAll('.resonance-btn').forEach(btn => {
+            btn.addEventListener('click', () => applyPreset(btn.dataset.preset));
+        });
+
+        window.addEventListener('resize', resizeCanvas);
+
+        // --- Initialization ---
+        setupSliders();
+        resizeCanvas();
+        updateResonanceIndicator();
+        animate();
+    </script>
+</body>
+</html>
