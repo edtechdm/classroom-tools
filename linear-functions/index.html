@@ -37,6 +37,7 @@
         .container {
             max-width: 1400px;
             margin: 0 auto;
+            position: relative;
         }
 
         header {
@@ -54,6 +55,28 @@
         header p {
             color: #a0a0a0;
             font-size: 0.8rem;
+        }
+
+        .hub-link {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            padding: 6px 16px;
+            font-size: 0.75rem;
+            color: #ffd700;
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 20px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            letter-spacing: 0.3px;
+            z-index: 10;
+        }
+
+        .hub-link:hover {
+            background: rgba(255, 215, 0, 0.2);
+            border-color: rgba(255, 215, 0, 0.5);
+            box-shadow: 0 0 12px rgba(255, 215, 0, 0.2);
         }
 
         .main-content {
@@ -396,6 +419,12 @@
                 font-size: 0.75rem;
             }
 
+            .hub-link {
+                position: static;
+                display: inline-block;
+                margin-top: 6px;
+            }
+
             .main-content {
                 gap: 10px;
             }
@@ -594,6 +623,7 @@
         <header>
             <h1>Linear Functions Explorer</h1>
             <p>Discover how y = kx + b creates straight lines</p>
+            <a href="https://classroom-tools.pages.dev/" class="hub-link" target="_blank">All Classroom Tools →</a>
         </header>
 
         <div class="main-content">

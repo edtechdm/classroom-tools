@@ -35,6 +35,34 @@
         .container {
             max-width: 1400px;
             margin: 0 auto;
+            position: relative;
+        }
+
+        .all-tools-link {
+            position: absolute;
+            top: 0;
+            right: 0;
+            z-index: 100;
+            text-decoration: none;
+            background: #2980b9;
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: background 0.2s ease, transform 0.15s ease;
+            box-shadow: 0 2px 8px rgba(41, 128, 185, 0.3);
+            white-space: nowrap;
+        }
+
+        .all-tools-link:hover {
+            background: #1a6da3;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(41, 128, 185, 0.4);
+        }
+
+        .all-tools-link:active {
+            transform: translateY(0);
         }
 
         header {
@@ -197,6 +225,13 @@
                 height: 55vw !important;
                 min-height: 280px !important;
                 max-height: 400px !important;
+            }
+
+            .all-tools-link {
+                position: static;
+                display: block;
+                text-align: center;
+                margin-bottom: 8px;
             }
         }
 
@@ -615,6 +650,7 @@
 </head>
 <body>
     <div class="container">
+        <a href="https://classroom-tools.pages.dev/" class="all-tools-link" target="_blank">All Classroom Tools &rarr;</a>
         <header>
             <h1>Parabola Explorer</h1>
             <div class="equation-display" id="equationDisplay">y = x²</div>

@@ -60,6 +60,25 @@
             font-size: 1.2rem;
         }
 
+        .hub-link {
+            margin-left: auto;
+            padding: 10px 20px;
+            background: #f6ad55;
+            color: #1a202c;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 700;
+            border-radius: 6px;
+            white-space: nowrap;
+            transition: background 0.2s;
+            align-self: center;
+            margin-right: 12px;
+        }
+
+        .hub-link:hover {
+            background: #ed8936;
+        }
+
         .main-area {
             flex: 1;
             display: flex;
@@ -294,6 +313,12 @@
                 flex-shrink: 0;
             }
 
+            .hub-link {
+                padding: 8px 12px;
+                font-size: 0.75rem;
+                margin-right: 8px;
+            }
+
             .tab-icon {
                 font-size: 1rem;
             }
@@ -495,6 +520,7 @@
             <button class="tab" data-mode="mirror">
                 <span class="tab-icon">🪞</span> Mirror
             </button>
+            <a class="hub-link" href="https://classroom-tools.pages.dev/" target="_blank" rel="noopener">All Classroom Tools</a>
         </div>
 
         <div class="main-area">

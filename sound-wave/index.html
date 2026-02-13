@@ -76,6 +76,33 @@
         }
 
         /* Sound toggle button */
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .all-tools-link {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            background: rgba(255, 255, 255, 0.15);
+            border: 2px solid rgba(255, 255, 255, 0.35);
+            border-radius: 20px;
+            color: #ffffff;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .all-tools-link:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.6);
+        }
+
         .sound-toggle {
             display: flex;
             align-items: center;
@@ -461,6 +488,11 @@
                 font-size: 0.8rem;
             }
 
+            .all-tools-link {
+                padding: 5px 10px;
+                font-size: 0.75rem;
+            }
+
             .wave-section {
                 min-height: 35vh;
                 max-height: 45vh;
@@ -611,10 +643,15 @@
         <!-- Header -->
         <header>
             <h1>Waves & Sound Explorer</h1>
-            <button class="sound-toggle" id="soundToggle">
-                <span class="sound-icon">🔇</span>
-                <span>Sound Off</span>
-            </button>
+            <div class="header-right">
+                <a class="all-tools-link" href="https://classroom-tools.pages.dev/" target="_blank" rel="noopener">
+                    ← All Classroom Tools
+                </a>
+                <button class="sound-toggle" id="soundToggle">
+                    <span class="sound-icon">🔇</span>
+                    <span>Sound Off</span>
+                </button>
+            </div>
         </header>
 
         <!-- Wave visualization -->
