@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classroom Interactive Tools</title>
+
+    <!-- Yandex.Metrika counter -->
+    <script type="text/javascript">
+        (function(m,e,t,r,i,k,a){
+            m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+            m[i].l=1*new Date();
+            for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+            k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+        })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=106371504', 'ym');
+
+        ym(106371504, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+    </script>
+    <noscript><div><img src="https://mc.yandex.ru/watch/106371504" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+    <!-- /Yandex.Metrika counter -->
+
+    <style>
+        /* ===== Base Styles ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Georgia, 'Times New Roman', serif;
+            background-color: #fafafa;
+            color: #333;
+            line-height: 1.6;
+            padding: 2rem 1rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* ===== Header with Contact ===== */
+        .header-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 0.5rem;
+        }
+
+        h1 {
+            font-size: 1.75rem;
+            font-weight: normal;
+            color: #2c3e50;
+        }
+
+        .contacts-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, #1877f2 0%, #0d65d9 100%);
+            color: #fff;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 500;
+            box-shadow: 0 2px 8px rgba(24, 119, 242, 0.35);
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .contacts-link:hover {
+            background: linear-gradient(135deg, #0d65d9 0%, #0a52b5 100%);
+            box-shadow: 0 4px 12px rgba(24, 119, 242, 0.45);
+            transform: translateY(-1px);
+        }
+
+        .contacts-link:focus {
+            outline: 2px solid #5a8dee;
+            outline-offset: 2px;
+        }
+
+        .contacts-link svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+        }
+
+        h2 {
+            font-size: 1.1rem;
+            font-weight: normal;
+            color: #555;
+            margin-bottom: 1.5rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+        }
+
+        /* ===== Filter Pills ===== */
+        .filter-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .filter-label {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .filter-pills {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-pill {
+            background: #fff;
+            border: 1px solid #d0d0d0;
+            border-radius: 20px;
+            padding: 0.35rem 0.9rem;
+            font-size: 0.85rem;
+            font-family: inherit;
+            color: #555;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .filter-pill:hover {
+            border-color: #999;
+            background: #f5f5f5;
+        }
+
+        .filter-pill:focus {
+            outline: 2px solid #5a8dee;
+            outline-offset: 2px;
+        }
+
+        .filter-pill.active {
+            background: #4a6fa5;
+            color: #fff;
+            border-color: #4a6fa5;
+        }
+
+        /* ===== Tools Grid ===== */
+        .tools-grid {
+            display: grid;
+            gap: 1.25rem;
+        }
+
+        /* ===== Tool Card ===== */
+        .tool-card {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+            display: flex;
+            flex-direction: row;
+            align-items: stretch;
+            transition: box-shadow 0.15s ease;
+        }
+
+        .tool-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .tool-card.hidden {
+            display: none;
+        }
+
+        /* ===== Tool Preview ===== */
+        .tool-preview {
+            width: 220px;
+            min-width: 220px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-right: 1px solid #e0e0e0;
+            overflow: hidden;
+            position: relative;
+            clip-path: inset(0);
+        }
+
+        .tool-preview-frame {
+            width: 1200px;
+            height: 900px;
+            border: none;
+            transform: scale(0.18);
+            transform-origin: top left;
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            pointer-events: none;
+        }
+
+        .tool-preview-link {
+            position: absolute;
+            inset: 0;
+            z-index: 10;
+        }
+
+        /* Mask to hide scrollbars on edges */
+        .tool-preview::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 10px;
+            height: 100%;
+            background: linear-gradient(to right, transparent, #f0f4f8 50%);
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        .tool-preview::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 10px;
+            background: linear-gradient(to bottom, transparent, #f0f4f8 50%);
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        /* ===== Tool Content ===== */
+        .tool-content {
+            flex: 1;
+            padding: 1rem 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .tool-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .tool-name {
+            font-size: 1.05rem;
+            color: #2c3e50;
+            font-weight: normal;
+        }
+
+        .tool-tag {
+            background: #f0f4f8;
+            color: #4a6fa5;
+            font-size: 0.75rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 3px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        .tool-description {
+            font-size: 0.9rem;
+            color: #666;
+            line-height: 1.5;
+            flex: 1;
+        }
+
+        .tool-footer {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            margin-top: 0.25rem;
+        }
+
+        .tool-link {
+            display: inline-block;
+            background: #fff;
+            border: 1px solid #4a6fa5;
+            color: #4a6fa5;
+            padding: 0.4rem 1rem;
+            border-radius: 3px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            transition: all 0.15s ease;
+        }
+
+        .tool-link:hover {
+            background: #4a6fa5;
+            color: #fff;
+        }
+
+        .tool-link:focus {
+            outline: 2px solid #5a8dee;
+            outline-offset: 2px;
+        }
+
+        /* ===== Community Section ===== */
+        .community-section {
+            margin-top: 2.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .community-section p {
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .community-link {
+            color: #4a6fa5;
+            text-decoration: none;
+            border-bottom: 1px dotted #4a6fa5;
+        }
+
+        .community-link:hover {
+            color: #3a5a8a;
+            border-bottom-style: solid;
+        }
+
+        .community-link:focus {
+            outline: 2px solid #5a8dee;
+            outline-offset: 2px;
+        }
+
+        /* ===== Footer ===== */
+        .footer {
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e8e8e8;
+            font-size: 0.8rem;
+            color: #999;
+            text-align: center;
+        }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 700px) {
+            .tool-card {
+                flex-direction: column;
+            }
+
+            .tool-preview {
+                width: 100%;
+                min-width: unset;
+                height: 200px;
+                border-right: none;
+                border-bottom: 1px solid #e0e0e0;
+            }
+
+            .tool-preview-frame {
+                width: 1400px;
+                height: 1000px;
+                transform: scale(0.26);
+            }
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 1rem;
+            }
+
+            .header-wrapper {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .contacts-link {
+                align-self: flex-start;
+            }
+
+            h1 {
+                font-size: 1.4rem;
+            }
+
+            .tool-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .tool-footer {
+                justify-content: stretch;
+            }
+
+            .tool-link {
+                width: 100%;
+                text-align: center;
+            }
+        }
+
+        /* ===== Print Styles ===== */
+        @media print {
+            body {
+                background: #fff;
+            }
+
+            .filter-section,
+            .contacts-link {
+                display: none;
+            }
+
+            .tool-card {
+                box-shadow: none;
+                border: 1px solid #ccc;
+                break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Page Header -->
+    <header class="header-wrapper">
+        <h1>Classroom Interactive Tools</h1>
+        <a href="https://www.facebook.com/groups/digitalteachingresource"
+           class="contacts-link"
+           target="_blank"
+           rel="noopener"
+           aria-label="Contact us on Facebook (opens in new tab)">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+            </svg>
+            My Group
+        </a>
+    </header>
+
+    <!-- Filter Section -->
+    <section class="filter-section" aria-label="Filter tools by subject">
+        <span class="filter-label">Filter by subject:</span>
+        <div class="filter-pills" role="group" aria-label="Subject filters">
+            <button class="filter-pill active" data-filter="all" aria-pressed="true">All</button>
+            <button class="filter-pill" data-filter="math" aria-pressed="false">Math</button>
+            <button class="filter-pill" data-filter="physics" aria-pressed="false">Physics</button>
+        </div>
+    </section>
+
+    <!-- Tools List -->
+    <main>
+        <h2>Available Tools</h2>
+        <div class="tools-grid" role="list" aria-label="List of classroom tools">
+
+            <!-- Tool 1: Linear Functions Explorer -->
+            <article class="tool-card" data-subject="math" role="listitem">
+                <div class="tool-preview">
+                    <iframe src="https://classroom-tools.pages.dev/linear-functions/" class="tool-preview-frame" loading="lazy" scrolling="no" title="Linear Functions Explorer preview"></iframe>
+                    <a href="https://classroom-tools.pages.dev/linear-functions/" target="_blank" rel="noopener" class="tool-preview-link" aria-label="Open Linear Functions Explorer"></a>
+                </div>
+                <div class="tool-content">
+                    <div class="tool-header">
+                        <span class="tool-name">Linear Functions Explorer</span>
+                        <span class="tool-tag">Math</span>
+                    </div>
+                    <p class="tool-description">
+                        Helps students see how changing slope and intercept affects a line.
+                    </p>
+                    <div class="tool-footer">
+                        <a href="https://classroom-tools.pages.dev/linear-functions/"
+                           class="tool-link"
+                           target="_blank"
+                           rel="noopener"
+                           aria-label="Open Linear Functions Explorer tool">
+                            Open tool
+                        </a>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Tool 2: Systems of Linear Equations -->
+            <article class="tool-card" data-subject="math" role="listitem">
+                <div class="tool-preview">
+                    <iframe src="https://classroom-tools.pages.dev/linear-equations/" class="tool-preview-frame" loading="lazy" scrolling="no" title="Systems of Linear Equations preview"></iframe>
+                    <a href="https://classroom-tools.pages.dev/linear-equations/" target="_blank" rel="noopener" class="tool-preview-link" aria-label="Open Systems of Linear Equations"></a>
+                </div>
+                <div class="tool-content">
+                    <div class="tool-header">
+                        <span class="tool-name">Systems of Linear Equations</span>
+                        <span class="tool-tag">Math</span>
+                    </div>
+                    <p class="tool-description">
+                        Visualizes how two lines intersect (or don't).
+                    </p>
+                    <div class="tool-footer">
+                        <a href="https://classroom-tools.pages.dev/linear-equations/"
+                           class="tool-link"
+                           target="_blank"
+                           rel="noopener"
+                           aria-label="Open Systems of Linear Equations tool">
+                            Open tool
+                        </a>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Tool 3: Parabola / Quadratic Functions -->
+            <article class="tool-card" data-subject="math" role="listitem">
+                <div class="tool-preview">
+                    <iframe src="https://classroom-tools.pages.dev/parabola/" class="tool-preview-frame" loading="lazy" scrolling="no" title="Parabola / Quadratic Functions preview"></iframe>
+                    <a href="https://classroom-tools.pages.dev/parabola/" target="_blank" rel="noopener" class="tool-preview-link" aria-label="Open Parabola / Quadratic Functions"></a>
+                </div>
+                <div class="tool-content">
+                    <div class="tool-header">
+                        <span class="tool-name">Parabola / Quadratic Functions</span>
+                        <span class="tool-tag">Math</span>
+                    </div>
+                    <p class="tool-description">
+                        Explore how coefficients a, b, and c shape a parabola.
+                    </p>
+                    <div class="tool-footer">
+                        <a href="https://classroom-tools.pages.dev/parabola/"
+                           class="tool-link"
+                           target="_blank"
+                           rel="noopener"
+                           aria-label="Open Parabola / Quadratic Functions tool">
+                            Open tool
+                        </a>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Tool 4: Sound Waves -->
+            <article class="tool-card" data-subject="physics" role="listitem">
+                <div class="tool-preview">
+                    <iframe src="https://classroom-tools.pages.dev/sound-wave/" class="tool-preview-frame" loading="lazy" scrolling="no" title="Sound Waves preview"></iframe>
+                    <a href="https://classroom-tools.pages.dev/sound-wave/" target="_blank" rel="noopener" class="tool-preview-link" aria-label="Open Sound Waves"></a>
+                </div>
+                <div class="tool-content">
+                    <div class="tool-header">
+                        <span class="tool-name">Sound Waves (visual + audio)</span>
+                        <span class="tool-tag">Physics</span>
+                    </div>
+                    <p class="tool-description">
+                        Shows how frequency and amplitude affect sound.
+                    </p>
+                    <div class="tool-footer">
+                        <a href="https://classroom-tools.pages.dev/sound-wave/"
+                           class="tool-link"
+                           target="_blank"
+                           rel="noopener"
+                           aria-label="Open Sound Waves tool">
+                            Open tool
+                        </a>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Tool 5: Optics -->
+            <article class="tool-card" data-subject="physics" role="listitem">
+                <div class="tool-preview">
+                    <iframe src="https://classroom-tools.pages.dev/optics/" class="tool-preview-frame" loading="lazy" scrolling="no" title="Optics preview"></iframe>
+                    <a href="https://classroom-tools.pages.dev/optics/" target="_blank" rel="noopener" class="tool-preview-link" aria-label="Open Optics"></a>
+                </div>
+                <div class="tool-content">
+                    <div class="tool-header">
+                        <span class="tool-name">Optics</span>
+                        <span class="tool-tag">Physics</span>
+                    </div>
+                    <p class="tool-description">
+                        Interactive light ray diagrams for lenses and mirrors.
+                    </p>
+                    <div class="tool-footer">
+                        <a href="https://classroom-tools.pages.dev/optics/"
+                           class="tool-link"
+                           target="_blank"
+                           rel="noopener"
+                           aria-label="Open Optics tool">
+                            Open tool
+                        </a>
+                    </div>
+                </div>
+            </article>
+
+        </div>
+    </main>
+
+    <!-- Community Section -->
+    <section class="community-section" aria-label="Community">
+        <p>
+            I'm starting a small Facebook group to discuss digital teaching tools
+            and share ideas with other educators.
+            <a href="https://www.facebook.com/groups/digitalteachingresource"
+               class="community-link"
+               target="_blank"
+               rel="noopener"
+               aria-label="Join the discussion on Facebook (opens in new tab)">
+                Join the discussion on Facebook
+            </a>
+        </p>
+    </section>
+
+    <!-- Footer with dynamic date -->
+    <footer class="footer">
+        <p>Last updated: <span id="last-updated"></span></p>
+    </footer>
+
+    <script>
+        // ===== Dynamic Date =====
+        // Display today's date in a readable format
+        (function() {
+            var today = new Date();
+            var options = { year: 'numeric', month: 'long', day: 'numeric' };
+            var formattedDate = today.toLocaleDateString('en-US', options);
+            document.getElementById('last-updated').textContent = formattedDate;
+        })();
+
+        // ===== Filter Functionality =====
+        // Allow filtering tools by subject using pill buttons
+        (function() {
+            var filterButtons = document.querySelectorAll('.filter-pill');
+            var toolCards = document.querySelectorAll('.tool-card');
+
+            filterButtons.forEach(function(button) {
+                button.addEventListener('click', function() {
+                    var filter = this.getAttribute('data-filter');
+
+                    // Update active state on buttons
+                    filterButtons.forEach(function(btn) {
+                        btn.classList.remove('active');
+                        btn.setAttribute('aria-pressed', 'false');
+                    });
+                    this.classList.add('active');
+                    this.setAttribute('aria-pressed', 'true');
+
+                    // Show/hide cards based on filter
+                    toolCards.forEach(function(card) {
+                        var subject = card.getAttribute('data-subject');
+                        if (filter === 'all' || subject === filter) {
+                            card.classList.remove('hidden');
+                        } else {
+                            card.classList.add('hidden');
+                        }
+                    });
+                });
+            });
+        })();
+    </script>
+
+</body>
+</html>
